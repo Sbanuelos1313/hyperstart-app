@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block extra_styles %}
+<style>
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(245,200,66,0.06),transparent 60%);}
+.login-box{background:var(--surf);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:420px;width:100%;position:relative;z-index:1;}
+.logo-area{text-align:center;margin-bottom:28px;}
+.logo-svg{margin:0 auto 12px;}
+.logo-title{font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;}
+.logo-title span{color:var(--gold);}
+.logo-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.field{margin-bottom:16px;}
+label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px;}
+input{width:100%;padding:12px 15px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+input:focus{border-color:var(--gold);}
+.error{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--coral);margin-bottom:16px;}
+.tabs{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;}
+.tab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);border:none;transition:all .2s;}
+.tab.active{background:var(--gold);color:#0a0e1a;}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.admin-note{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;}
+</style>
+{% endblock %}
+{% block body %}
+<div class="login-box">
+  <div class="logo-area">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="52" height="52">
+      <rect width="100" height="100" rx="22" fill="#0a0e1a"/>
+      <rect x="16" y="18" width="21" height="64" rx="10" fill="#5b8ecf"/>
+      <rect x="63" y="18" width="21" height="64" rx="10" fill="#9b6a7a"/>
+      <rect x="16" y="40" width="68" height="20" rx="10" fill="#f5c842"/>
+    </svg>
+    <div class="logo-title">Hyper<span>Start</span></div>
+    <div class="logo-sub">STEM/STEAM Career Pathways · Grades 6–8</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+    <button class="tab" id="tab-register" onclick="switchTab('register')">New Student</button>
+  </div>
+
+  {% if error %}
+  <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <!-- LOGIN FORM -->
+  <form id="form-login" action="/auth/login" method="POST">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="your@email.com" required autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn btn-gold btn-block" style="margin-top:8px">Sign In →</button>
+  </form>
+
+  <!-- REGISTER FORM -->
+  <form id="form-register" action="/auth/register" method="POST" style="display:none">
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" name="full_name" placeholder="Your name" required>
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="your@email.com" required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Create a password" required minlength="6">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <label>Grade</label>
+        <select name="grade" required style="width:100%;padding:12px 15px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:15px;outline:none;">
+          <option value="6">6th Grade</option>
+          <option value="7">7th Grade</option>
+          <option value="8">8th Grade</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Zip Code</label>
+        <input type="text" name="zip_code" placeholder="73111" maxlength="5">
+      </div>
+    </div>
+    <div class="field">
+      <label>School</label>
+      <select name="school" required style="width:100%;padding:12px 15px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:15px;outline:none;">
+        <option value="">Select your school</option>
+        <option value="F.D. Moon Middle School">F.D. Moon Middle School</option>
+        <option value="Classen SAS">Classen SAS</option>
+        <option value="Millwood Public Schools">Millwood Public Schools</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-gold btn-block" style="margin-top:8px">Create Account →</button>
+  </form>
+
+  <div class="admin-note">
+    Administrators: use your assigned credentials<br>
+    <a href="/admin/dashboard" style="color:var(--teal);font-size:12px;">Admin Dashboard →</a>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+function switchTab(t) {
+  document.getElementById('form-login').style.display = t==='login'?'block':'none';
+  document.getElementById('form-register').style.display = t==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active', t==='login');
+  document.getElementById('tab-register').classList.toggle('active', t==='register');
+}
+{% endblock %}
