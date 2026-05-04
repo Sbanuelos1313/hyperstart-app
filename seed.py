@@ -1,13 +1,13 @@
 """
-Run once to seed admin accounts and demo student profiles.
-Usage: python seed.py
+Seed script - creates admin and demo student accounts.
 """
 import os, sys
+
+# Fix path so 'app' module is found
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.database import engine, Base, SessionLocal, User, StudentProgress
 from app.auth import hash_password
-from datetime import datetime
 
 Base.metadata.create_all(bind=engine)
 db = SessionLocal()
@@ -29,10 +29,19 @@ created = 0
 
 for a in ADMINS:
     if not db.query(User).filter(User.email == a["email"]).first():
-        user = User(email=a["email"], hashed_password=hash_password(a["password"]), full_name=a["name"], role="admin", grade=0, school="Chronos AI")
+        user = User(
+            email=a["email"],
+            hashed_password=hash_password(a["password"]),
+            full_name=a["name"],
+            role="admin",
+            grade=0,
+            school="Chronos AI"
+        )
         db.add(user)
         print(f"Created admin: {a['email']}")
         created += 1
+    else:
+        print(f"Admin exists: {a['email']}")
 
 for s in DEMO_STUDENTS:
     if not db.query(User).filter(User.email == s["email"]).first():
@@ -62,15 +71,11 @@ for s in DEMO_STUDENTS:
             ai_mod=1 if s.get("xp", 0) >= 280 else 0,
         )
         db.add(prog)
-        print(f"Created student: {s['name']} ({s['school']})")
+        print(f"Created student: {s['name']}")
         created += 1
+    else:
+        print(f"Student exists: {s['name']}")
 
 db.commit()
-print(f"\n✅ Seeded {created} accounts.")
-print("\nAdmin login:")
-print("  Email: demo@hyperstart.net")
-print("  Password: Demo2026!")
-print("\nDemo student logins (all password: Demo2026!):")
-for s in DEMO_STUDENTS:
-    print(f"  {s['name']}: {s['email']}")
 db.close()
+print(f"\n✅ Done. {created} accounts created.")
