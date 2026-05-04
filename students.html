@@ -1,0 +1,128 @@
+from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from app.database import get_db, User, StudentProgress, SessionLog
+from app.auth import require_user
+from datetime import datetime
+
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
+
+@router.get("/home", response_class=HTMLResponse)
+async def home(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
+    if user.role in ("admin", "teacher"):
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/admin/dashboard", status_code=302)
+    
+    if not user.progress:
+        progress = StudentProgress(user_id=user.id)
+        db.add(progress)
+        db.commit()
+        db.refresh(user)
+
+    return templates.TemplateResponse("student/portal.html", {
+        "request": request,
+        "user": user,
+        "progress": user.progress,
+        "pre_done": user.progress.pre_done if user.progress else False,
+    })
+
+@router.post("/api/pre-assessment")
+async def save_pre_assessment(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
+    data = await request.json()
+    p = user.progress
+    if not p:
+        p = StudentProgress(user_id=user.id)
+        db.add(p)
+    p.pre_conf = data.get("conf", 0)
+    p.pre_aware = data.get("aware", 0)
+    p.pre_money = data.get("money", 0)
+    p.pre_why = data.get("why", 0)
+    p.pre_done = True
+    db.commit()
+    log = SessionLog(user_id=user.id, school=user.school, zip_code=user.zip_code, action="pre_assessment", module="assessment")
+    db.add(log)
+    db.commit()
+    return {"status": "ok"}
+
+@router.post("/api/post-assessment")
+async def save_post_assessment(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
+    data = await request.json()
+    p = user.progress
+    if not p:
+        p = StudentProgress(user_id=user.id)
+        db.add(p)
+    p.post_conf = data.get("conf", 0)
+    p.post_aware = data.get("aware", 0)
+    p.post_money = data.get("money", 0)
+    p.post_why = data.get("why", 0)
+    p.post_done = True
+    db.commit()
+    return {"status": "ok"}
+
+@router.post("/api/progress")
+async def save_progress(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
+    data = await request.json()
+    p = user.progress
+    if not p:
+        p = StudentProgress(user_id=user.id)
+        db.add(p)
+
+    # Update fields from client
+    if "cluster" in data:
+        user.cluster = data["cluster"]
+        p.career_sparks_done = True
+        p.career_sparks_cluster = data["cluster"]
+    if "xp" in data:
+        user.xp = max(user.xp, data["xp"])
+    if "money_mod" in data:
+        p.money_mod = max(p.money_mod, data["money_mod"])
+    if "think_q" in data:
+        p.think_q = max(p.think_q, data["think_q"])
+    if "story_done" in data:
+        p.story_done = data["story_done"]
+    if "ai_mod" in data:
+        p.ai_mod = max(p.ai_mod, data["ai_mod"])
+    if "eng_done" in data:
+        p.eng_done = data["eng_done"]
+    if "reflections" in data:
+        existing = p.reflections or {}
+        existing.update(data["reflections"])
+        p.reflections = existing
+
+    # Log session activity
+    module = data.get("module", "general")
+    xp_earned = data.get("xp_delta", 0)
+    log = SessionLog(user_id=user.id, school=user.school, zip_code=user.zip_code, action="progress_save", module=module, xp_earned=xp_earned)
+    db.add(log)
+    db.commit()
+    return {"status": "ok", "xp": user.xp}
+
+@router.get("/api/me")
+async def get_me(user=Depends(require_user), db: Session = Depends(get_db)):
+    p = user.progress
+    return {
+        "id": user.id,
+        "name": user.full_name,
+        "email": user.email,
+        "grade": user.grade,
+        "school": user.school,
+        "xp": user.xp,
+        "cluster": user.cluster,
+        "role": user.role,
+        "progress": {
+            "pre_done": p.pre_done if p else False,
+            "pre_conf": p.pre_conf if p else 0,
+            "pre_aware": p.pre_aware if p else 0,
+            "pre_money": p.pre_money if p else 0,
+            "pre_why": p.pre_why if p else 0,
+            "money_mod": p.money_mod if p else 0,
+            "think_q": p.think_q if p else 0,
+            "story_done": p.story_done if p else False,
+            "ai_mod": p.ai_mod if p else 0,
+            "eng_done": p.eng_done if p else False,
+            "career_sparks_done": p.career_sparks_done if p else False,
+            "reflections": p.reflections if p else {},
+        } if p else {}
+    }
