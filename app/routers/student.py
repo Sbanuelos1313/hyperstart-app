@@ -13,18 +13,19 @@ async def home(request: Request, user=Depends(require_user), db: Session = Depen
     if user.role in ("admin", "teacher"):
         return RedirectResponse(url="/admin/dashboard", status_code=302)
     if not user.progress:
-        progress = StudentProgress(user_id=user.id)
-        db.add(progress)
+        db.add(StudentProgress(user_id=user.id))
         db.commit()
         db.refresh(user)
-    return templates.TemplateResponse("student/portal.html", {"request": request, "user": user, "progress": user.progress, "pre_done": user.progress.pre_done if user.progress else False})
+    return templates.TemplateResponse("student/portal.html", {
+        "request": request, "user": user, "progress": user.progress,
+        "pre_done": user.progress.pre_done if user.progress else False
+    })
 
 @router.post("/api/pre-assessment")
 async def save_pre(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
     data = await request.json()
-    p = user.progress
-    if not p:
-        p = StudentProgress(user_id=user.id)
+    p = user.progress or StudentProgress(user_id=user.id)
+    if not user.progress:
         db.add(p)
     p.pre_conf = data.get("conf", 0)
     p.pre_aware = data.get("aware", 0)
@@ -61,13 +62,18 @@ async def save_progress(request: Request, user=Depends(require_user), db: Sessio
         existing = p.reflections or {}
         existing.update(data["reflections"])
         p.reflections = existing
-    log = SessionLog(user_id=user.id, school=user.school, zip_code=user.zip_code, action="progress", module=data.get("module","general"), xp_earned=data.get("xp_delta",0))
-    db.add(log)
+    db.add(SessionLog(user_id=user.id, school=user.school, zip_code=user.zip_code,
+        action="progress", module=data.get("module", "general"), xp_earned=data.get("xp_delta", 0)))
     db.commit()
     return {"status": "ok", "xp": user.xp}
 
 @router.get("/api/me")
 async def get_me(user=Depends(require_user)):
     p = user.progress
-    return {"id": user.id, "name": user.full_name, "grade": user.grade, "school": user.school, "xp": user.xp, "cluster": user.cluster, "role": user.role, "progress": {"pre_done": p.pre_done if p else False, "money_mod": p.money_mod if p else 0, "think_q": p.think_q if p else 0, "story_done": p.story_done if p else False, "ai_mod": p.ai_mod if p else 0, "eng_done": p.eng_done if p else False, "career_sparks_done": p.career_sparks_done if p else False, "reflections": p.reflections if p else {}} if p else {}}
-'@ | Set-Content app\routers\student.py -Encoding UTF8
+    return {"id": user.id, "name": user.full_name, "grade": user.grade, "school": user.school,
+        "xp": user.xp, "cluster": user.cluster, "role": user.role,
+        "progress": {"pre_done": p.pre_done if p else False, "money_mod": p.money_mod if p else 0,
+            "think_q": p.think_q if p else 0, "story_done": p.story_done if p else False,
+            "ai_mod": p.ai_mod if p else 0, "eng_done": p.eng_done if p else False,
+            "career_sparks_done": p.career_sparks_done if p else False,
+            "reflections": p.reflections if p else {}} if p else {}}
