@@ -6,27 +6,6 @@
 <title>HyperStart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>
-window.HS_USER = {
-  id: {{ user.id }},
-  name: {{ user.full_name | tojson }},
-  grade: {{ user.grade or 7 }},
-  school: {{ (user.school or 'F.D. Moon Middle School') | tojson }},
-  xp: {{ user.xp or 0 }},
-  cluster: {{ user.cluster | tojson if user.cluster else 'null' }},
-  role: {{ user.role | tojson }}
-};
-window.HS_PROGRESS = {
-  pre_done: {{ (progress.pre_done if progress else False) | tojson }},
-  money_mod: {{ progress.money_mod if progress else 0 }},
-  think_q: {{ progress.think_q if progress else 0 }},
-  story_done: {{ (progress.story_done if progress else False) | tojson }},
-  ai_mod: {{ progress.ai_mod if progress else 0 }},
-  eng_done: {{ (progress.eng_done if progress else False) | tojson }},
-  career_sparks_done: {{ (progress.career_sparks_done if progress else False) | tojson }},
-  reflections: {{ (progress.reflections or {}) | tojson if progress else '{}' }}
-};
-</script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1810,50 +1789,69 @@ function awardXP(n){
   setTimeout(function(){t.remove();},2300);
 }
 
+
 init();
-if(typeof window.HS_USER !== 'undefined' && window.HS_USER.id) {
-  student = {
-    id: window.HS_USER.id,
-    name: window.HS_USER.name,
-    grade: window.HS_USER.grade || 7,
-    school: window.HS_USER.school || 'F.D. Moon Middle School',
-    emoji: '\u2728',
-    color: '#f5c842',
-    xp: window.HS_USER.xp || 0,
-    cluster: window.HS_USER.cluster || null,
-    tab: 'home'
-  };
-  var p = window.HS_PROGRESS || {};
-  answers = {
-    moneyMod: p.money_mod || 0,
-    thinkQ: p.think_q || 0,
-    aiMod: p.ai_mod || 0,
-    storyStarted: p.story_done || false,
-    preAssessmentDone: p.pre_done || false,
-    quizDone: p.career_sparks_done || false,
-    clusterName: window.HS_USER.cluster || null,
-    sparkScores: {}, sparkCollected: [],
-    sparkPhase: p.career_sparks_done ? 'done' : 'collect'
-  };
-  if(p.reflections) Object.assign(answers, p.reflections);
-  window.saveToServer = function(mod, xp) {
-    fetch('/student/api/progress', {method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:xp||0,
-        money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,
-        story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:mod||'general',
-        reflections:Object.fromEntries(Object.entries(answers).filter(function(e){
-          return e[0].startsWith('reflect_')||e[0].startsWith('aiReflect_');
-        }))
-      })
-    }).catch(function(){});
-  };
-  var _ox=awardXP; awardXP=function(n){_ox(n);window.saveToServer('xp',n);};
-} else {
-  student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-  answers={};
-}
-quizState={q:0,scores:{}};
-showTab('home');
+
+// Load real user data from server API
+fetch('/student/api/me', {credentials: 'include'})
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if(data && data.id) {
+      student = {
+        id: data.id,
+        name: data.name,
+        grade: data.grade || 7,
+        school: data.school || 'F.D. Moon Middle School',
+        emoji: '\u2728',
+        color: '#f5c842',
+        xp: data.xp || 0,
+        cluster: data.cluster || null,
+        tab: 'home'
+      };
+      var p = data.progress || {};
+      answers = {
+        moneyMod: p.money_mod || 0,
+        thinkQ: p.think_q || 0,
+        aiMod: p.ai_mod || 0,
+        storyStarted: p.story_done || false,
+        preAssessmentDone: p.pre_done || false,
+        quizDone: p.career_sparks_done || false,
+        clusterName: data.cluster || null,
+        sparkScores: {}, sparkCollected: [],
+        sparkPhase: p.career_sparks_done ? 'done' : 'collect'
+      };
+      if(p.reflections) Object.assign(answers, p.reflections);
+
+      // Override awardXP to save to server
+      var _ox = awardXP;
+      awardXP = function(n) {
+        _ox(n);
+        fetch('/student/api/progress', {
+          method: 'POST', credentials: 'include',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            cluster: student.cluster, xp: student.xp, xp_delta: n || 0,
+            money_mod: answers.moneyMod || 0, think_q: answers.thinkQ || 0,
+            ai_mod: answers.aiMod || 0, story_done: !!answers.storyStarted,
+            eng_done: !!answers.engDone, module: 'general'
+          })
+        }).catch(function(){});
+      };
+    } else {
+      // Fallback to demo persona
+      student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
+      answers = {};
+    }
+    quizState = {q:0, scores:{}};
+    showTab('home');
+  })
+  .catch(function() {
+    // If API fails, use demo
+    student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
+    answers = {};
+    quizState = {q:0, scores:{}};
+    showTab('home');
+  });
 
 </script>
 </body>
