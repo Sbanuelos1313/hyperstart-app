@@ -9,22 +9,22 @@
 <script>
 window.HS_USER = {
   id: {{ user.id }},
-  name: "{{ user.full_name }}",
+  name: {{ user.full_name | tojson }},
   grade: {{ user.grade or 7 }},
-  school: "{{ user.school or 'F.D. Moon Middle School' }}",
+  school: {{ (user.school or 'F.D. Moon Middle School') | tojson }},
   xp: {{ user.xp or 0 }},
-  cluster: {% if user.cluster %}"{{ user.cluster }}"{% else %}null{% endif %},
-  role: "{{ user.role }}"
+  cluster: {{ user.cluster | tojson if user.cluster else 'null' }},
+  role: {{ user.role | tojson }}
 };
 window.HS_PROGRESS = {
-  pre_done: {% if progress and progress.pre_done %}true{% else %}false{% endif %},
+  pre_done: {{ (progress.pre_done if progress else False) | tojson }},
   money_mod: {{ progress.money_mod if progress else 0 }},
   think_q: {{ progress.think_q if progress else 0 }},
-  story_done: {% if progress and progress.story_done %}true{% else %}false{% endif %},
+  story_done: {{ (progress.story_done if progress else False) | tojson }},
   ai_mod: {{ progress.ai_mod if progress else 0 }},
-  eng_done: {% if progress and progress.eng_done %}true{% else %}false{% endif %},
-  career_sparks_done: {% if progress and progress.career_sparks_done %}true{% else %}false{% endif %},
-  reflections: {{ progress.reflections | tojson if (progress and progress.reflections) else '{}' }}
+  eng_done: {{ (progress.eng_done if progress else False) | tojson }},
+  career_sparks_done: {{ (progress.career_sparks_done if progress else False) | tojson }},
+  reflections: {{ (progress.reflections or {}) | tojson if progress else '{}' }}
 };
 </script>
 
