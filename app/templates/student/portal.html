@@ -217,6 +217,28 @@ select.inp option{background:var(--surf2)}
   100% { transform: translateX(110vw) translateY(var(--dy, 0px)); opacity: 0; }
 }
 </style>
+
+<script>
+window.HS_USER = {
+  id: {{ user.id }},
+  name: "{{ user.full_name }}",
+  grade: {{ user.grade or 7 }},
+  school: "{{ user.school or 'F.D. Moon Middle School' }}",
+  xp: {{ user.xp or 0 }},
+  cluster: {% if user.cluster %}"{{ user.cluster }}"{% else %}null{% endif %},
+  role: "{{ user.role }}"
+};
+window.HS_PROGRESS = {
+  pre_done: {% if progress and progress.pre_done %}true{% else %}false{% endif %},
+  money_mod: {{ progress.money_mod if progress else 0 }},
+  think_q: {{ progress.think_q if progress else 0 }},
+  story_done: {% if progress and progress.story_done %}true{% else %}false{% endif %},
+  ai_mod: {{ progress.ai_mod if progress else 0 }},
+  eng_done: {% if progress and progress.eng_done %}true{% else %}false{% endif %},
+  career_sparks_done: {% if progress and progress.career_sparks_done %}true{% else %}false{% endif %},
+  reflections: {{ progress.reflections | tojson if (progress and progress.reflections) else '{}' }}
+};
+</script>
 </head>
 
 
@@ -1783,64 +1805,57 @@ function awardXP(n){
   setTimeout(function(){t.remove();},2300);
 }
 
-// Load real user data from server
 init();
-student = {
-  id: '{{ user.id }}',
-  name: '{{ user.full_name }}',
-  grade: {{ user.grade or 7 }},
-  school: '{{ user.school or "F.D. Moon Middle School" }}',
-  emoji: '&#127775;',
-  color: '#f5c842',
-  xp: {{ user.xp or 0 }},
-  cluster: {{ ('"%s"' % user.cluster) if user.cluster else 'null' }},
-  tab: 'home'
-};
-answers = {
-  moneyMod: {{ progress.money_mod if progress else 0 }},
-  thinkQ: {{ progress.think_q if progress else 0 }},
-  aiMod: {{ progress.ai_mod if progress else 0 }},
-  storyStarted: {{ 'true' if (progress and progress.story_done) else 'false' }},
-  preAssessmentDone: {{ 'true' if (progress and progress.pre_done) else 'false' }},
-  sparkScores: {},
-  sparkCollected: [],
-  sparkPhase: {{ '"done"' if (progress and progress.career_sparks_done) else '"collect"' }}
-};
-{% if progress and progress.reflections %}
-var savedReflections = {{ progress.reflections | tojson }};
-Object.assign(answers, savedReflections);
-{% endif %}
-quizState = {q:0,scores:{}};
 
-// Save progress back to server periodically
-function saveToServer(module, xpDelta) {
-  fetch('/student/api/progress', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      cluster: student.cluster,
-      xp: student.xp,
-      xp_delta: xpDelta || 0,
-      money_mod: answers.moneyMod || 0,
-      think_q: answers.thinkQ || 0,
-      ai_mod: answers.aiMod || 0,
-      story_done: !!answers.storyStarted,
-      eng_done: !!answers.engDone,
-      module: module || 'general',
-      reflections: Object.fromEntries(
-        Object.entries(answers).filter(([k]) => k.startsWith('reflect_') || k.startsWith('aiReflect_'))
-      )
-    })
-  }).catch(()=>{});
+// Use real server data if available
+if(typeof window.HS_USER !== 'undefined' && window.HS_USER.id) {
+  student = {
+    id: window.HS_USER.id,
+    name: window.HS_USER.name,
+    grade: window.HS_USER.grade || 7,
+    school: window.HS_USER.school || 'F.D. Moon Middle School',
+    emoji: String.fromCodePoint(0x1F31F),
+    color: '#f5c842',
+    xp: window.HS_USER.xp || 0,
+    cluster: window.HS_USER.cluster || null,
+    tab: 'home'
+  };
+  var p = window.HS_PROGRESS || {};
+  answers = {
+    moneyMod: p.money_mod || 0,
+    thinkQ: p.think_q || 0,
+    aiMod: p.ai_mod || 0,
+    storyStarted: p.story_done || false,
+    preAssessmentDone: p.pre_done || false,
+    quizDone: p.career_sparks_done || false,
+    clusterName: window.HS_USER.cluster || null,
+    sparkScores: {},
+    sparkCollected: [],
+    sparkPhase: p.career_sparks_done ? 'done' : 'collect'
+  };
+  if(p.reflections) { Object.assign(answers, p.reflections); }
+  window.saveToServer = function(module, xpDelta) {
+    fetch('/student/api/progress', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        cluster: student.cluster, xp: student.xp, xp_delta: xpDelta || 0,
+        money_mod: answers.moneyMod || 0, think_q: answers.thinkQ || 0,
+        ai_mod: answers.aiMod || 0, story_done: !!answers.storyStarted,
+        eng_done: !!answers.engDone, module: module || 'general',
+        reflections: Object.fromEntries(
+          Object.entries(answers).filter(function(e){ return e[0].startsWith('reflect_') || e[0].startsWith('aiReflect_'); })
+        )
+      })
+    }).catch(function(){});
+  };
+  var _origXP = awardXP;
+  awardXP = function(n) { _origXP(n); window.saveToServer('xp', n); };
+} else {
+  student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
+  answers = {};
 }
-
-// Override awardXP to also save to server
-const _origAwardXP = awardXP;
-awardXP = function(n) {
-  _origAwardXP(n);
-  saveToServer('xp', n);
-};
-
+quizState = {q:0,scores:{}};
 showTab('home');
 </script>
 </html>
