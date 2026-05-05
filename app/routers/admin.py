@@ -1,87 +1,47 @@
-from fastapi import APIRouter, Request, Form, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+﻿from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.database import get_db, User, StudentProgress
-from app.auth import authenticate_user, create_token, hash_password, get_current_user
-from datetime import timedelta
+from app.auth import require_admin
+from datetime import datetime
+import csv, io
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-MASTER_EMAILS = ["sam@chronos-ai.net", "admin@hyperstart.net", "demo@hyperstart.net"]
+@router.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, admin=Depends(require_admin), db: Session = Depends(get_db)):
+    total_students = db.query(User).filter(User.role == "student").count()
+    schools = db.query(User.school, func.count(User.id)).filter(User.role == "student").group_by(User.school).all()
+    zips = db.query(User.zip_code, func.count(User.id)).filter(User.role == "student", User.zip_code != None).group_by(User.zip_code).all()
+    prog = db.query(StudentProgress).all()
+    fields = ["conf", "aware", "money", "why"]
+    pre_avg = {}
+    post_avg = {}
+    for f in fields:
+        pre_vals = [getattr(p, f"pre_{f}") for p in prog if getattr(p, f"pre_{f}") > 0]
+        post_vals = [getattr(p, f"post_{f}") for p in prog if getattr(p, f"post_{f}") > 0]
+        pre_avg[f] = round(sum(pre_vals)/len(pre_vals), 1) if pre_vals else 0
+        post_avg[f] = round(sum(post_vals)/len(post_vals), 1) if post_vals else 0
+    sparks_done = db.query(StudentProgress).filter(StudentProgress.career_sparks_done == True).count()
+    ai_started = db.query(StudentProgress).filter(StudentProgress.ai_mod > 0).count()
+    eng_done = db.query(StudentProgress).filter(StudentProgress.eng_done == True).count()
+    return templates.TemplateResponse("admin/dashboard.html", {"request": request, "admin": admin, "total_students": total_students, "schools": schools, "zips": zips, "pre_avg": pre_avg, "post_avg": post_avg, "sparks_done": sparks_done, "ai_started": ai_started, "eng_done": eng_done, "fields": fields})
 
-@router.get("/login", response_class=HTMLResponse)
-async def login_get(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+@router.get("/students", response_class=HTMLResponse)
+async def students(request: Request, admin=Depends(require_admin), db: Session = Depends(get_db)):
+    students = db.query(User).filter(User.role == "student").order_by(User.school, User.full_name).all()
+    return templates.TemplateResponse("admin/students.html", {"request": request, "admin": admin, "students": students})
 
-@router.post("/login")
-async def login_post(
-    request: Request,
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    user = authenticate_user(email.lower().strip(), password, db)
-    if not user:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "Invalid email or password"
-        })
-    token = create_token({"sub": user.email, "role": user.role})
-    redirect_url = "/admin/dashboard" if user.role in ("admin", "teacher") else "/student/home"
-    response = RedirectResponse(url=redirect_url, status_code=302)
-    response.set_cookie("hs_token", token, httponly=True, max_age=86400, samesite="lax")
-    return response
-
-@router.post("/api/login")
-async def api_login(request: Request, db: Session = Depends(get_db)):
-    data = await request.json()
-    user = authenticate_user(data.get("email", "").lower().strip(), data.get("password", ""), db)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = create_token({"sub": user.email, "role": user.role})
-    return {"token": token, "role": user.role, "name": user.full_name}
-
-@router.get("/logout")
-async def logout():
-    response = RedirectResponse(url="/", status_code=302)
-    response.delete_cookie("hs_token")
-    return response
-
-@router.post("/register")
-async def register(
-    request: Request,
-    email: str = Form(...),
-    password: str = Form(...),
-    full_name: str = Form(...),
-    grade: int = Form(...),
-    school: str = Form(...),
-    zip_code: str = Form(default=""),
-    db: Session = Depends(get_db)
-):
-    existing = db.query(User).filter(User.email == email.lower()).first()
-    if existing:
-        return templates.TemplateResponse("register.html", {
-            "request": request,
-            "error": "Email already registered"
-        })
-    user = User(
-        email=email.lower().strip(),
-        hashed_password=hash_password(password),
-        full_name=full_name,
-        grade=grade,
-        school=school,
-        zip_code=zip_code,
-        role="admin" if email.lower() in MASTER_EMAILS else "student"
-    )
-    db.add(user)
-    db.flush()
-    progress = StudentProgress(user_id=user.id)
-    db.add(progress)
-    db.commit()
-    token = create_token({"sub": user.email, "role": user.role})
-    redirect_url = "/admin/dashboard" if user.role == "admin" else "/student/home"
-    response = RedirectResponse(url=redirect_url, status_code=302)
-    response.set_cookie("hs_token", token, httponly=True, max_age=86400, samesite="lax")
-    return response
+@router.get("/api/export/csv")
+async def export_csv(admin=Depends(require_admin), db: Session = Depends(get_db)):
+    students = db.query(User).filter(User.role == "student").all()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Name","School","Grade","Zip","Cluster","XP","Pre Conf","Post Conf","Pre Aware","Post Aware","Sparks Done","AI Started","Eng Done"])
+    for s in students:
+        p = s.progress
+        writer.writerow([s.full_name, s.school, s.grade, s.zip_code, s.cluster or "", s.xp, p.pre_conf if p else 0, p.post_conf if p else 0, p.pre_aware if p else 0, p.post_aware if p else 0, p.career_sparks_done if p else False, (p.ai_mod > 0) if p else False, p.eng_done if p else False])
+    return Response(content=output.getvalue(), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename=hyperstart_{datetime.now().strftime('%Y%m%d')}.csv"})

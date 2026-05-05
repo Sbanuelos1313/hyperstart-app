@@ -1,9 +1,6 @@
-from fastapi import APIRouter, Request, Depends
-from app.database import get_db
-from app.auth import get_current_user
-
+﻿from fastapi import APIRouter
 router = APIRouter()
 
 @router.get("/health")
-async def health():
+def health():
     return {"status": "ok", "service": "HyperStart"}
