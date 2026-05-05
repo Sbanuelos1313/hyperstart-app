@@ -10,8 +10,6 @@
 :root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--gold:#f5c842;--teal:#2dd4bf;--violet:#a78bfa;--muted:#8b95b0;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f0f4ff;height:100vh;overflow:hidden;position:relative}
-.screen{display:none;height:100vh;flex-direction:column;position:relative;z-index:1}
-.screen.active{display:flex}
 
 /* Background */
 body::before {
@@ -115,21 +113,17 @@ body::before {
 </div>
 
 <script>
-console.log("✅ HyperStart - Full Visual Version");
+console.log("✅ HyperStart - Background + Logo Version");
 
-// Constants
+// Constants & Variables
 const PERSONAS = [{id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:120,cluster:'Engineering & Design'}];
-
 let student = PERSONAS[0];
-let answers = {};
 
 // Navigation
 function showTab(tab){
   const inner = document.getElementById('app-inner');
   inner.innerHTML = '';
   if(tab === 'home') renderHome(inner);
-  else if(tab === 'pathways') renderPathways(inner);
-  else if(tab === 'money') renderMoney(inner);
   else if(tab === 'engineering') renderEngineering(inner);
 }
 
@@ -193,10 +187,6 @@ function makeBusinessDecision(n){
 function showYear1Report(){
   alert("🎉 Year 1 Report: Profit made! +280 XP");
 }
-
-// Placeholders
-function renderPathways(el){ el.innerHTML = '<div class="h1">Career Sparks</div><p>Interest quiz coming soon...</p>'; }
-function renderMoney(el){ el.innerHTML = '<div class="h1">Life & Money Skills</div><p>Budget challenge coming soon...</p>'; }
 
 // Start
 document.addEventListener('DOMContentLoaded', () => {
