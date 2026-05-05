@@ -70,3 +70,4 @@ async def save_progress(request: Request, user=Depends(require_user), db: Sessio
 async def get_me(user=Depends(require_user)):
     p = user.progress
     return {"id": user.id, "name": user.full_name, "grade": user.grade, "school": user.school, "xp": user.xp, "cluster": user.cluster, "role": user.role, "progress": {"pre_done": p.pre_done if p else False, "money_mod": p.money_mod if p else 0, "think_q": p.think_q if p else 0, "story_done": p.story_done if p else False, "ai_mod": p.ai_mod if p else 0, "eng_done": p.eng_done if p else False, "career_sparks_done": p.career_sparks_done if p else False, "reflections": p.reflections if p else {}} if p else {}}
+'@ | Set-Content app\routers\student.py -Encoding UTF8
