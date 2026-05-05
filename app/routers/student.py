@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from sqlalchemy.orm import Session
 from app.database import get_db, User, StudentProgress, SessionLog
 from app.auth import require_user
+import os
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/home", response_class=HTMLResponse)
 async def home(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
@@ -16,10 +15,11 @@ async def home(request: Request, user=Depends(require_user), db: Session = Depen
         db.add(StudentProgress(user_id=user.id))
         db.commit()
         db.refresh(user)
-    return templates.TemplateResponse("student/portal.html", {
-        "request": request, "user": user, "progress": user.progress,
-        "pre_done": user.progress.pre_done if user.progress else False
-    })
+    # Serve as static file - bypasses Jinja2 template rendering
+    portal_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates", "student", "portal.html")
+    with open(portal_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    return HTMLResponse(content=content)
 
 @router.post("/api/pre-assessment")
 async def save_pre(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
