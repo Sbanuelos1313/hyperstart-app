@@ -1,67 +1,50 @@
-from datetime import datetime, timedelta
+﻿from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status, Cookie, Request
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Request, Form, Depends, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from app.database import get_db, User
-import os
+from app.database import get_db, User, StudentProgress
+from app.auth import authenticate_user, create_token, hash_password, get_current_user
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "hyperstart-secret-key-change-in-prod-2026")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 24
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+@router.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
-def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
-
-def hash_password(password):
-    return pwd_context.hash(password)
-
-def create_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-def get_token_from_request(request: Request) -> Optional[str]:
-    token = request.cookies.get("hs_token")
-    if not token:
-        auth = request.headers.get("Authorization", "")
-        if auth.startswith("Bearer "):
-            token = auth[7:]
-    return token
-
-def get_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
-    token = get_token_from_request(request)
-    if not token:
-        return None
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if not email:
-            return None
-        user = db.query(User).filter(User.email == email).first()
-        return user
-    except JWTError:
-        return None
-
-def require_user(request: Request, db: Session = Depends(get_db)) -> User:
-    user = get_current_user(request, db)
+@router.post("/login")
+async def login_post(request: Request, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    user = authenticate_user(email.lower().strip(), password, db)
     if not user:
-        raise HTTPException(status_code=302, headers={"Location": "/login"})
-    return user
+        return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid email or password"})
+    token = create_token({"sub": user.email, "role": user.role})
+    redirect_url = "/admin/dashboard" if user.role in ("admin", "teacher") else "/student/home"
+    response = RedirectResponse(url=redirect_url, status_code=302)
+    response.set_cookie("hs_token", token, httponly=True, max_age=86400, samesite="lax")
+    return response
 
-def require_admin(request: Request, db: Session = Depends(get_db)) -> User:
-    user = get_current_user(request, db)
-    if not user or user.role not in ("admin", "teacher"):
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return user
+@router.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/", status_code=302)
+    response.delete_cookie("hs_token")
+    return response
 
-def authenticate_user(email: str, password: str, db: Session) -> Optional[User]:
-    user = db.query(User).filter(User.email == email).first()
-    if not user or not verify_password(password, user.hashed_password):
-        return None
-    return user
+@router.post("/register")
+async def register(request: Request, email: str = Form(...), password: str = Form(...), full_name: str = Form(...), grade: int = Form(...), school: str = Form(...), zip_code: str = Form(default=""), db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.email == email.lower()).first()
+    if existing:
+        return templates.TemplateResponse("login.html", {"request": request, "error": "Email already registered"})
+    user = User(email=email.lower().strip(), hashed_password=hash_password(password), full_name=full_name, grade=grade, school=school, zip_code=zip_code, role="student")
+    db.add(user)
+    db.flush()
+    progress = StudentProgress(user_id=user.id)
+    db.add(progress)
+    db.commit()
+    token = create_token({"sub": user.email, "role": user.role})
+    response = RedirectResponse(url="/student/home", status_code=302)
+    response.set_cookie("hs_token", token, httponly=True, max_age=86400, samesite="lax")
+    return response
