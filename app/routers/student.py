@@ -7,19 +7,13 @@ import os
 
 router = APIRouter()
 
-@router.get("/home", response_class=HTMLResponse)
+@router.get("/home")
 async def home(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
     if user.role in ("admin", "teacher"):
         return RedirectResponse(url="/admin/dashboard", status_code=302)
-    if not user.progress:
-        db.add(StudentProgress(user_id=user.id))
-        db.commit()
-        db.refresh(user)
-    # Serve as static file - bypasses Jinja2 template rendering
-    portal_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates", "student", "portal.html")
-    with open(portal_path, "r", encoding="utf-8") as f:
-        content = f.read()
-    return HTMLResponse(content=content)
+    
+    # Serve as static file - this fixes the JS execution issue
+    return RedirectResponse(url="/static/portal.html", status_code=302)
 
 @router.post("/api/pre-assessment")
 async def save_pre(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
