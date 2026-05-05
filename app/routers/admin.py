@@ -1,4 +1,5 @@
-﻿from fastapi import APIRouter, Request, Depends, HTTPException
+﻿@'
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -45,3 +46,4 @@ async def export_csv(admin=Depends(require_admin), db: Session = Depends(get_db)
         p = s.progress
         writer.writerow([s.full_name, s.school, s.grade, s.zip_code, s.cluster or "", s.xp, p.pre_conf if p else 0, p.post_conf if p else 0, p.pre_aware if p else 0, p.post_aware if p else 0, p.career_sparks_done if p else False, (p.ai_mod > 0) if p else False, p.eng_done if p else False])
     return Response(content=output.getvalue(), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename=hyperstart_{datetime.now().strftime('%Y%m%d')}.csv"})
+'@ | Set-Content app\routers\admin.py -Encoding UTF8
