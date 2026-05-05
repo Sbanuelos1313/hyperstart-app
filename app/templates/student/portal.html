@@ -488,6 +488,7 @@ select.inp option{background:var(--surf2)}
   </div>
 </div>
 <script>
+console.log("✅ HyperStart - Fixed loading version");
 
 const PERSONAS=[
   {id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:0,cluster:null,tab:'home',preScores:{},desc:'7th grade · F.D. Moon · Starting fresh'},
@@ -771,7 +772,10 @@ const LIFE_MODULES=[
   {icon:'📈',title:'Building Wealth Early',tag:'Long-Term Thinking',content:'$100 per month invested at 18 becomes approximately $525,000 at 65 at 8% return. The same amount starting at 30 becomes $175,000. Time is the most valuable financial asset you will ever have. It is the only one you cannot buy back.',lens:{eth:'Generational wealth is not just money — it is options. The ability to help your family and serve your community without financial desperation changes what you can do in the world.',hum:'Across cultures, wealth-building is embedded in proverbs: Plant a tree whose shade you will never sit under. The philosophy of delayed gratification has deep roots in every tradition.'}}
 ];
 
-let student=null, answers={}, currentTab='home', quizState={q:0,scores:{}};
+let student = null;
+let answers = {};
+let currentTab = 'home';
+let quizState = {q:0, scores:{}};
 
 function init(){
   const list=document.getElementById('persona-list');
