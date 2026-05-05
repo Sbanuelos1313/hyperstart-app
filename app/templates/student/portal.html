@@ -1701,6 +1701,70 @@ window.updateBudgetChallenge = updateBudgetChallenge;
 window.awardXP = awardXP;
 window.renderHome = renderHome;
 
-    </script>
+    
+function renderThink(el){
+  var q=answers.thinkQ||0;
+  var bq=BIG_QUESTIONS[q%BIG_QUESTIONS.length];
+  el.innerHTML=
+    '<div class="h1 mb4"><span class="a">Big Questions</span></div>'+
+    '<p class="lead">Philosophy, ethics, and your purpose — woven into every STEM/STEAM career.</p>'+
+    '<div class="bq-card">'+
+      '<span class="bq-tag">'+bq.tag+'</span>'+
+      '<div class="bq-q">'+bq.q+'</div>'+
+      '<div class="bq-context">'+bq.context+'</div>'+
+      '<div class="bq-thinker">'+
+        '<div class="bq-thinker-icon">&#129504;</div>'+
+        '<div>'+
+          '<div class="bq-thinker-name">'+bq.thinker+'</div>'+
+          '<div class="bq-thinker-quote">'+bq.quote+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="field mt12">'+
+      '<label class="lbl">Your reflection</label>'+
+      '<textarea class="inp" id="reflect-inp" rows="5" placeholder="What do you actually think? There is no wrong answer..." style="resize:none;line-height:1.7">'+(answers['reflect_'+q]||'')+'</textarea>'+
+    '</div>'+
+    '<button class="btn btn-gold btn-block" id="save-reflect" style="margin-top:8px">Save Reflection +30 XP</button>'+
+    '<div class="div"></div>'+
+    '<div class="flex g8 mt4" id="think-nav"></div>'+
+    '<div style="height:24px"></div>';
+
+  var saveBtn=document.getElementById('save-reflect');
+  if(saveBtn)saveBtn.onclick=function(){saveReflect(q);};
+
+  var nav=document.getElementById('think-nav');
+  if(!nav)return;
+  if(q>0){
+    var pb=document.createElement('button');pb.className='btn btn-out';pb.innerHTML='&larr; Previous';
+    pb.onclick=function(){answers.thinkQ=q-1;showTab('think');};nav.appendChild(pb);
+  }
+  if(q<BIG_QUESTIONS.length-1){
+    var nb=document.createElement('button');nb.className='btn btn-gold';nb.style.flex='1';
+    nb.innerHTML='Next Question &rarr; <span style="font-size:11px;opacity:.7">+30 XP</span>';
+    nb.onclick=function(){answers.thinkQ=q+1;awardXP(30);showTab('think');};nav.appendChild(nb);
+  } else {
+    var fb=document.createElement('button');fb.className='btn btn-teal';fb.style.flex='1';
+    fb.innerHTML='Complete! +50 XP &#8594;';
+    fb.onclick=function(){awardXP(50);showTab('progress');};nav.appendChild(fb);
+  }
+}
+
+// Export all functions to window scope for onclick handlers
+window.showTab = showTab;
+window.go = go;
+window.loginStudent = loginStudent;
+window.collectCard = collectCard;
+window.loadCareerAI = loadCareerAI;
+window.saveReflect = saveReflect;
+window.pickStory = pickStory;
+window.pickInterest = pickInterest;
+window.selectPre = selectPre;
+window.updateBudgetChallenge = updateBudgetChallenge;
+window.clusterKey = clusterKey;
+window.awardXP = awardXP;
+window.buildInterestGrid = buildInterestGrid;
+window.renderHome = renderHome;
+
+</script>
 </body>
 </html>
