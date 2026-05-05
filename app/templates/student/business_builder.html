@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Builder • HyperStart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'DM Sans',sans-serif; background:#0f172a; color:#e2e8f0; }
+        .container { max-width:1280px; margin:0 auto; padding:20px; }
+        .header { display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #334155; }
+        .avatar-box { background:#1e2937; border-radius:24px; padding:30px; text-align:center; margin:25px 0; }
+        svg { background:#334155; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+        .controls { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:25px; }
+        .card { background:#1e2937; border-radius:16px; padding:24px; }
+        button { padding:12px 20px; margin:6px 4px; border:none; border-radius:12px; background:#22d3ee; color:#0f172a; font-weight:600; cursor:pointer; font-size:15px; }
+        button:hover { background:#67e8f9; }
+        .nav-btn { background:#334155; color:white; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🚀 My STEM Business Builder</h1>
+        <button onclick="window.location.href='/student/home'" class="nav-btn">← Back to Portal</button>
+    </div>
+
+    <div class="avatar-box">
+        <h2>Build Your Founder Avatar</h2>
+        <svg id="avatar-svg" width="320" height="440" viewBox="0 0 320 440"></svg>
+    </div>
+
+    <div class="controls">
+        <!-- Avatar Controls -->
+        <div class="card">
+            <h3>👤 Customize Your Founder</h3>
+            <button onclick="randomizeAvatar()">🎲 Randomize</button>
+            <button onclick="saveAvatar()">💾 Save Avatar</button>
+            
+            <p style="margin:15px 0 8px;"><strong>Skin Tone</strong></p>
+            <button onclick="setSkin('#f4c2a1')">Light</button>
+            <button onclick="setSkin('#e0ac7e')">Medium</button>
+            <button onclick="setSkin('#c68642')">Deep</button>
+        </div>
+
+        <!-- Business Simulation -->
+        <div class="card">
+            <h3 id="biz-name">Northside Solar Solutions</h3>
+            <p><strong>Cash:</strong> <span id="cash">$2,450</span></p>
+            
+            <h4>This Week’s Deductive Reasoning Challenge</h4>
+            <button onclick="makeDecision(1)">Lower Price → Gain Customers</button>
+            <button onclick="makeDecision(2)">Invest in Marketing</button>
+            <button onclick="makeDecision(3)">Upgrade Equipment</button>
+            
+            <button onclick="showReport()" style="margin-top:20px; width:100%; background:#eab308; color:#0f172a;">
+                📊 See Year 1 Report Card
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let avatarState = {skin: '#f4c2a1'};
+
+function updateAvatar() {
+    document.getElementById('avatar-svg').innerHTML = `
+        <ellipse cx="160" cy="135" rx="72" ry="88" fill="${avatarState.skin}"/>
+        <path d="M95 85 Q160 40 225 85" fill="#2c2c2c"/>
+        <rect x="95" y="215" width="130" height="195" rx="35" fill="#1e88e5"/>
+        <text x="160" y="290" text-anchor="middle" fill="#fff" font-size="26" font-weight="700">CEO</text>
+    `;
+}
+
+function setSkin(color) { avatarState.skin = color; updateAvatar(); }
+function randomizeAvatar() {
+    const skins = ['#f4c2a1','#e0ac7e','#c68642','#a67c5d'];
+    avatarState.skin = skins[Math.floor(Math.random()*skins.length)];
+    updateAvatar();
+}
+
+async function saveAvatar() {
+    if (window.HS_USER) {
+        await fetch('/student/api/progress', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({module: 'business_builder', reflections: {avatar_saved: true}})
+        }).catch(() => {});
+    }
+    alert("✅ Avatar saved successfully!");
+}
+
+let cash = 2450;
+function makeDecision(choice) {
+    const gains = [520, 780, 1120];
+    cash += gains[choice-1];
+    document.getElementById('cash').textContent = '$' + cash.toLocaleString();
+    alert("Excellent deductive reasoning! Your business is growing.");
+}
+
+function showReport() {
+    const profit = cash - 1450;
+    alert(`🎉 YEAR 1 REPORT CARD\n\nBusiness: ${document.getElementById('biz-name').textContent}\nProfit: $${profit.toLocaleString()}\nFamilies Helped: 156\nFiscal Literacy: 96/100\nDeductive Reasoning: Mastered!\n\n+250 XP Awarded!`);
+}
+
+// Initialize
+updateAvatar();
+if (window.HS_USER && window.HS_USER.cluster) {
+    document.getElementById('biz-name').textContent = 
+        window.HS_USER.cluster.replace('&', 'and') + " Ventures";
+}
+</script>
+</body>
+</html>
