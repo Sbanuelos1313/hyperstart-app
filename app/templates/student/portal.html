@@ -6,14 +6,13 @@
 <title>HyperStart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 :root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--gold:#f5c842;--teal:#2dd4bf;--violet:#a78bfa;--muted:#8b95b0;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f0f4ff;height:100vh;overflow:hidden}
 .screen{display:none;height:100vh;flex-direction:column}
 .screen.active{display:flex}
-.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
 .btn{display:block;width:100%;padding:14px;border-radius:8px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
 .h1{font-size:28px;font-weight:800;margin-bottom:8px}
 .h2{font-size:20px;font-weight:700}
@@ -30,29 +29,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f0f4ff;height:
     <div id="app-inner"></div>
   </div>
 
-  <div style="padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex">
+  <div style="padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex;font-size:12px">
     <div onclick="showTab('home')" style="flex:1;text-align:center;cursor:pointer">🏠 Home</div>
+    <div onclick="showTab('pathways')" style="flex:1;text-align:center;cursor:pointer">⚡ Pathways</div>
+    <div onclick="showTab('money')" style="flex:1;text-align:center;cursor:pointer">💰 Money</div>
     <div onclick="showTab('engineering')" style="flex:1;text-align:center;cursor:pointer;color:var(--gold)">🏗️ Build</div>
   </div>
 </div>
 
 <script>
-console.log("✅ HyperStart - Fixed Short Version");
+console.log("✅ HyperStart - Full Demo Version");
 
 // Constants
-const PERSONAS = [
-  {id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:0,cluster:null}
-];
+const PERSONAS = [{id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:120,cluster:'Engineering & Design'}];
 
-// Variables
-let student = null;
+let student = PERSONAS[0];
+let answers = {};
+
+// Navigation
+function showTab(tab){
+  const inner = document.getElementById('app-inner');
+  inner.innerHTML = '';
+  if(tab === 'home') renderHome(inner);
+  else if(tab === 'pathways') renderPathways(inner);
+  else if(tab === 'money') renderMoney(inner);
+  else if(tab === 'engineering') renderEngineering(inner);
+}
+
+// Home
+function renderHome(el){
+  const name = student.name.split(' ')[0];
+  el.innerHTML = `
+    <div class="h1">Hey, <span style="color:var(--gold)">${name}</span> 👋</div>
+    <p>Welcome back. Let's build your future.</p>
+    <div class="card" style="text-align:center;margin:20px 0;padding:40px 20px">
+      <div style="font-size:70px">🚀</div>
+      <div class="h2">Ready to Build Your Business?</div>
+      <button onclick="showTab('engineering')" style="margin-top:20px">Open Business Builder →</button>
+    </div>
+  `;
+}
 
 // Business Builder
 function renderEngineering(el){
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
-    <p style="color:var(--muted)">Create your avatar and run your business.</p>
-    
+    <p style="color:var(--muted)">Build your avatar and run your business simulation.</p>
     <div class="card">
       <h3>Founder Avatar</h3>
       <svg id="founder-avatar" width="280" height="380" viewBox="0 0 300 410"></svg>
@@ -61,9 +83,8 @@ function renderEngineering(el){
         <button onclick="saveAvatar()">Save Avatar</button>
       </div>
     </div>
-
     <div class="card">
-      <h3 id="biz-name">Your Business</h3>
+      <h3 id="biz-name">Northside Ventures</h3>
       <p>Cash: <span id="cash-balance" style="font-weight:700">$2,450</span></p>
       <button onclick="makeBusinessDecision(1)" style="margin:8px 0">Lower Prices</button>
       <button onclick="makeBusinessDecision(2)" style="margin:8px 0">Invest in Marketing</button>
@@ -93,36 +114,19 @@ function makeBusinessDecision(n){
   alert("Smart decision! +30 XP");
 }
 function showYear1Report(){
-  alert("Year 1 Report: Great job! +280 XP");
+  alert("🎉 Year 1 Report: Profit made! +280 XP");
 }
 
-// Home Screen
-function renderHome(el){
-  if (!student) student = PERSONAS[0];
-  const name = student.name.split(' ')[0];
-
-  el.innerHTML = `
-    <div class="h1">Hey, <span style="color:var(--gold)">${name}</span> 👋</div>
-    <p>Welcome back. Let's build your future.</p>
-    
-    <div class="card" style="text-align:center;margin:20px 0;padding:30px">
-      <div style="font-size:60px">🚀</div>
-      <div class="h2">Ready to Build Your Business?</div>
-      <button onclick="showTab('engineering')" style="margin-top:20px">Open Business Builder →</button>
-    </div>
-  `;
+// Other tabs (expand these as needed)
+function renderPathways(el){ 
+  el.innerHTML = '<div class="h1">Career Sparks</div><p>Interest quiz + cluster pathways coming soon...</p>'; 
 }
-
-// Navigation
-function showTab(tab){
-  const inner = document.getElementById('app-inner');
-  if(tab === 'home') renderHome(inner);
-  else if(tab === 'engineering') renderEngineering(inner);
+function renderMoney(el){ 
+  el.innerHTML = '<div class="h1">Life & Money Skills</div><p>Budget challenge + 5 modules coming soon...</p>'; 
 }
 
 // Start the app
 document.addEventListener('DOMContentLoaded', () => {
-  student = PERSONAS[0];
   showTab('home');
 });
 
