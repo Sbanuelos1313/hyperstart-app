@@ -1683,15 +1683,23 @@ fetch('/student/api/me',{credentials:'include'})
   showTab('home');
 });
 
-// Export to window for onclick handlers
-window.showTab=showTab;window.go=go;window.loginStudent=loginStudent;
-window.collectCard=collectCard;window.loadCareerAI=loadCareerAI;
-window.saveReflect=saveReflect;window.pickStory=pickStory;
-window.pickInterest=pickInterest;window.selectPre=selectPre;
-window.updateBudgetChallenge=updateBudgetChallenge;
-window.clusterKey=clusterKey;window.awardXP=awardXP;
-window.buildInterestGrid=buildInterestGrid;window.renderHome=renderHome;
-
+// Global exports for onclick handlers
+window.showTab = showTab;
+window.go = go;
+window.loginStudent = loginStudent;
+window.randomizeAvatar = randomizeAvatar;
+window.saveAvatar = saveAvatar;
+window.makeBusinessDecision = makeBusinessDecision;
+window.showYear1Report = showYear1Report;
+window.collectCard = collectCard;
+window.loadCareerAI = loadCareerAI;
+window.saveReflect = saveReflect;
+window.pickStory = pickStory;
+window.pickInterest = pickInterest;
+window.selectPre = selectPre;
+window.updateBudgetChallenge = updateBudgetChallenge;
+window.awardXP = awardXP;
+window.renderHome = renderHome;
 
     </script>
 </body>
