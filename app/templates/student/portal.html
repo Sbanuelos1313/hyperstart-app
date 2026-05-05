@@ -293,7 +293,7 @@ select.inp option{background:var(--surf2)}
         <span class="lbl">Student Profiles</span>
         <div id="persona-list"></div>
         <div class="div"></div>
-        <button class="btn btn-out btn-block" onclick="go('s-admin')">&#128202; &nbsp;Admin / Committee Dashboard</button>
+        <button class="btn btn-out btn-block" data-go="s-admin">&#128202; &nbsp;Admin / Committee Dashboard</button>
       </div>
       <div class="tc mt12" style="font-size:11px;color:var(--muted)">HyperStart &middot; Chronos AI &middot; Edmond, OK</div>
     </div>
@@ -319,7 +319,7 @@ select.inp option{background:var(--surf2)}
       <div><div class="logo">Hyper<em>Start</em></div><span class="logo-sub" id="app-sub">STEM/STEAM &middot; Grades 6&ndash;8</span></div>
     </div>
     <div class="chips">
-      <button class="btn btn-out btn-sm" onclick="go('s-login')" style="font-size:12px;padding:6px 12px">&#8592; Profiles</button>
+      <button class="btn btn-out btn-sm" data-go="s-login" style="font-size:12px;padding:6px 12px">&#8592; Profiles</button>
       <div class="chip chip-teal" id="t-name">&mdash;</div>
       <div class="chip chip-gold" id="t-xp">0 XP</div>
     </div>
@@ -330,21 +330,21 @@ select.inp option{background:var(--surf2)}
     </div>
   </div>
   <div class="bnav" id="app-bnav">
-    <div class="bni active" id="bn-home" onclick="showTab('home')"><div class="bni-wrap">&#127968;</div><span class="bni-lbl">Home</span></div>
-    <div class="bni" id="bn-pathways" onclick="showTab('pathways')"><div class="bni-wrap">&#128640;</div><span class="bni-lbl">Pathways</span></div>
-    <div class="bni" id="bn-money" onclick="showTab('money')"><div class="bni-wrap">&#128176;</div><span class="bni-lbl">Life Skills</span></div>
-    <div class="bni" id="bn-think" onclick="showTab('think')"><div class="bni-wrap">&#129504;</div><span class="bni-lbl">Big Questions</span></div>
-    <div class="bni" id="bn-progress" onclick="showTab('progress')"><div class="bni-wrap">&#11088;</div><span class="bni-lbl">Progress</span></div>
-    <div class="bni" id="bn-storyline" onclick="showTab('storyline')"><div class="bni-wrap">&#128218;</div><span class="bni-lbl">My Story</span></div>
-    <div class="bni" id="bn-ai" onclick="showTab('ai')"><div class="bni-wrap">&#129302;</div><span class="bni-lbl">AI</span></div>
-    <div class="bni" id="bn-engineering" onclick="showTab('engineering')"><div class="bni-wrap">&#127963;&#65039;</div><span class="bni-lbl">Build</span></div>
+    <div class="bni active" id="bn-home" data-tab="home"><div class="bni-wrap">&#127968;</div><span class="bni-lbl">Home</span></div>
+    <div class="bni" id="bn-pathways" data-tab="pathways"><div class="bni-wrap">&#128640;</div><span class="bni-lbl">Pathways</span></div>
+    <div class="bni" id="bn-money" data-tab="money"><div class="bni-wrap">&#128176;</div><span class="bni-lbl">Life Skills</span></div>
+    <div class="bni" id="bn-think" data-tab="think"><div class="bni-wrap">&#129504;</div><span class="bni-lbl">Big Questions</span></div>
+    <div class="bni" id="bn-progress" data-tab="progress"><div class="bni-wrap">&#11088;</div><span class="bni-lbl">Progress</span></div>
+    <div class="bni" id="bn-storyline" data-tab="storyline"><div class="bni-wrap">&#128218;</div><span class="bni-lbl">My Story</span></div>
+    <div class="bni" id="bn-ai" data-tab="ai"><div class="bni-wrap">&#129302;</div><span class="bni-lbl">AI</span></div>
+    <div class="bni" id="bn-engineering" data-tab="engineering"><div class="bni-wrap">&#127963;&#65039;</div><span class="bni-lbl">Build</span></div>
   </div>
 </div>
 
 <div class="screen" id="s-admin">
   <div class="topbar">
     <div><div class="logo">Hyper<em>Start</em></div><span class="logo-sub">Program Dashboard</span></div>
-    <div class="chips"><button class="btn btn-out btn-sm" onclick="go('s-login')">&larr; Exit</button></div>
+    <div class="chips"><button class="btn btn-out btn-sm" data-go="s-login">&larr; Exit</button></div>
   </div>
   <div class="scroll">
     <div class="inner fade">
@@ -1791,36 +1791,71 @@ function awardXP(n){
 }
 
 init();
-fetch('/student/api/me',{credentials:'include'})
-.then(function(r){return r.json();})
-.then(function(data){
-  if(data&&data.id){
-    student={id:data.id,name:data.name,grade:data.grade||7,school:data.school||'F.D. Moon Middle School',emoji:'\u2728',color:'#f5c842',xp:data.xp||0,cluster:data.cluster||null,tab:'home'};
-    var p=data.progress||{};
-    answers={moneyMod:p.money_mod||0,thinkQ:p.think_q||0,aiMod:p.ai_mod||0,storyStarted:p.story_done||false,preAssessmentDone:p.pre_done||false,quizDone:p.career_sparks_done||false,clusterName:data.cluster||null,sparkScores:{},sparkCollected:[],sparkPhase:p.career_sparks_done?'done':'collect'};
-    if(p.reflections)Object.assign(answers,p.reflections);
-    var _ox=awardXP;
-    awardXP=function(n){_ox(n);fetch('/student/api/progress',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:n||0,money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:'general'})}).catch(function(){});};
-  }else{
-    student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-    answers={};
-  }
-  quizState={q:0,scores:{}};
-  showTab('home');
-}).catch(function(){
-  student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-  answers={};quizState={q:0,scores:{}};
-  showTab('home');
+
+// Wire nav tabs via data attributes
+document.querySelectorAll('[data-tab]').forEach(function(el){
+  el.addEventListener('click', function(){
+    if(student) showTab(this.dataset.tab);
+  });
+});
+document.querySelectorAll('[data-go]').forEach(function(el){
+  el.addEventListener('click', function(){ go(this.dataset.go); });
 });
 
-// Export to window for onclick handlers
-window.showTab=showTab;window.go=go;window.loginStudent=loginStudent;
-window.collectCard=collectCard;window.loadCareerAI=loadCareerAI;
-window.saveReflect=saveReflect;window.pickStory=pickStory;
-window.pickInterest=pickInterest;window.selectPre=selectPre;
-window.updateBudgetChallenge=updateBudgetChallenge;
-window.clusterKey=clusterKey;window.awardXP=awardXP;
-window.buildInterestGrid=buildInterestGrid;window.renderHome=renderHome;
+// Show loading state immediately
+var appInner = document.getElementById('app-inner');
+if(appInner) {
+  appInner.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px"><div style="width:40px;height:40px;border:3px solid rgba(245,200,66,.3);border-top-color:#f5c842;border-radius:50%;animation:sp .7s linear infinite"></div><div style="color:#8b95b0;font-size:14px">Loading your profile...</div></div>';
+}
+
+// Fetch real user data
+fetch('/student/api/me', {credentials:'include'})
+.then(function(r){ return r.json(); })
+.then(function(data){
+  if(data && data.id){
+    student = {
+      id: data.id, name: data.name, grade: data.grade||7,
+      school: data.school||'F.D. Moon Middle School',
+      emoji: '\u2728', color: '#f5c842',
+      xp: data.xp||0, cluster: data.cluster||null, tab: 'home'
+    };
+    var p = data.progress || {};
+    answers = {
+      moneyMod: p.money_mod||0, thinkQ: p.think_q||0, aiMod: p.ai_mod||0,
+      storyStarted: p.story_done||false, preAssessmentDone: p.pre_done||false,
+      quizDone: p.career_sparks_done||false, clusterName: data.cluster||null,
+      sparkScores: {}, sparkCollected: [],
+      sparkPhase: p.career_sparks_done ? 'done' : 'collect'
+    };
+    if(p.reflections) Object.assign(answers, p.reflections);
+    var _ox = awardXP;
+    awardXP = function(n){
+      _ox(n);
+      fetch('/student/api/progress', {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          cluster:student.cluster, xp:student.xp, xp_delta:n||0,
+          money_mod:answers.moneyMod||0, think_q:answers.thinkQ||0,
+          ai_mod:answers.aiMod||0, story_done:!!answers.storyStarted,
+          eng_done:!!answers.engDone, module:'general'
+        })
+      }).catch(function(){});
+    };
+  } else {
+    student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){ return p.id==='zara'; })));
+    answers = {};
+  }
+  quizState = {q:0, scores:{}};
+  showTab('home');
+})
+.catch(function(e){
+  console.log('API error, using demo:', e);
+  student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){ return p.id==='zara'; })));
+  answers = {};
+  quizState = {q:0, scores:{}};
+  showTab('home');
+});
 
 
 </script>
