@@ -1299,7 +1299,26 @@ function awardXP(n){
   setTimeout(function(){t.remove();},2300);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+
+  
+
+// Export to window scope
+window.showTab = showTab;
+window.go = go;
+window.loginStudent = loginStudent;
+window.collectCard = collectCard;
+window.loadCareerAI = loadCareerAI;
+window.saveReflect = saveReflect;
+window.pickStory = pickStory;
+window.pickInterest = pickInterest;
+window.selectPre = selectPre;
+window.updateBudgetChallenge = updateBudgetChallenge;
+window.clusterKey = clusterKey;
+window.awardXP = awardXP;
+window.buildInterestGrid = buildInterestGrid;
+window.renderHome = renderHome;
+
+window.addEventListener('load', function() {
   init();
   fetch('/student/api/me',{credentials:'include'})
   .then(function(r){return r.json();})
@@ -1309,8 +1328,6 @@ document.addEventListener('DOMContentLoaded', function() {
       var p=data.progress||{};
       answers={moneyMod:p.money_mod||0,thinkQ:p.think_q||0,aiMod:p.ai_mod||0,storyStarted:p.story_done||false,preAssessmentDone:p.pre_done||false,quizDone:p.career_sparks_done||false,clusterName:data.cluster||null,sparkScores:{},sparkCollected:[],sparkPhase:p.career_sparks_done?'done':'collect'};
       if(p.reflections)Object.assign(answers,p.reflections);
-      var _ox=awardXP;
-      awardXP=function(n){_ox(n);fetch('/student/api/progress',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:n||0,money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:'general'})}).catch(function(){});};
     }else{
       student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
       answers={};
@@ -1323,6 +1340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     showTab('home');
   });
 });
+  });
 
 window.showTab = showTab;
 window.go = go;
