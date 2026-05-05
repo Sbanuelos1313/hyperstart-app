@@ -1322,3 +1322,17 @@ fetch('/student/api/me',{credentials:'include'})
   answers={};quizState={q:0,scores:{}};
   showTab('home');
 });
+
+window.showTab = showTab;
+window.go = go;
+window.loginStudent = loginStudent;
+window.collectCard = collectCard;
+window.loadCareerAI = loadCareerAI;
+window.saveReflect = saveReflect;
+window.pickStory = pickStory;
+window.pickInterest = pickInterest;
+window.selectPre = selectPre;
+window.updateBudgetChallenge = updateBudgetChallenge;
+window.clusterKey = clusterKey;
+window.awardXP = awardXP;
+window.buildInterestGrid = buildInterestGrid;
