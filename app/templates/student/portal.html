@@ -3,10 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HyperStart &mdash; {{ user.full_name }}</title>
+<title>HyperStart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230a0e1a%27/%3E%3Crect x=%2716%27 y=%2718%27 width=%2721%27 height=%2764%27 rx=%2710%27 fill=%27%235b8ecf%27/%3E%3Crect x=%2763%27 y=%2718%27 width=%2721%27 height=%2764%27 rx=%2710%27 fill=%27%239b6a7a%27/%3E%3Crect x=%2716%27 y=%2740%27 width=%2768%27 height=%2720%27 rx=%2710%27 fill=%27%23f5c842%27/%3E%3C/svg%3E">
+<script>
+window.HS_USER = {
+  id: {{ user.id }},
+  name: "{{ user.full_name }}",
+  grade: {{ user.grade or 7 }},
+  school: "{{ user.school or 'F.D. Moon Middle School' }}",
+  xp: {{ user.xp or 0 }},
+  cluster: {% if user.cluster %}"{{ user.cluster }}"{% else %}null{% endif %},
+  role: "{{ user.role }}"
+};
+window.HS_PROGRESS = {
+  pre_done: {% if progress and progress.pre_done %}true{% else %}false{% endif %},
+  money_mod: {{ progress.money_mod if progress else 0 }},
+  think_q: {{ progress.think_q if progress else 0 }},
+  story_done: {% if progress and progress.story_done %}true{% else %}false{% endif %},
+  ai_mod: {{ progress.ai_mod if progress else 0 }},
+  eng_done: {% if progress and progress.eng_done %}true{% else %}false{% endif %},
+  career_sparks_done: {% if progress and progress.career_sparks_done %}true{% else %}false{% endif %},
+  reflections: {{ progress.reflections | tojson if (progress and progress.reflections) else '{}' }}
+};
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HyperStart - STEM/STEAM Pathways</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.14);--gold:#f5c842;--gold-d:rgba(245,200,66,0.1);--teal:#2dd4bf;--teal-d:rgba(45,212,191,0.1);--violet:#a78bfa;--violet-d:rgba(167,139,250,0.1);--coral:#fb7185;--coral-d:rgba(251,113,133,0.1);--green:#4ade80;--green-d:rgba(74,222,128,0.1);--amber:#fb923c;--amber-d:rgba(251,146,60,0.1);--text:#f0f4ff;--muted:#8b95b0;--r:14px;--r-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -218,29 +244,8 @@ select.inp option{background:var(--surf2)}
 }
 </style>
 
-<script>
-window.HS_USER = {
-  id: {{ user.id }},
-  name: "{{ user.full_name }}",
-  grade: {{ user.grade or 7 }},
-  school: "{{ user.school or 'F.D. Moon Middle School' }}",
-  xp: {{ user.xp or 0 }},
-  cluster: {% if user.cluster %}"{{ user.cluster }}"{% else %}null{% endif %},
-  role: "{{ user.role }}"
-};
-window.HS_PROGRESS = {
-  pre_done: {% if progress and progress.pre_done %}true{% else %}false{% endif %},
-  money_mod: {{ progress.money_mod if progress else 0 }},
-  think_q: {{ progress.think_q if progress else 0 }},
-  story_done: {% if progress and progress.story_done %}true{% else %}false{% endif %},
-  ai_mod: {{ progress.ai_mod if progress else 0 }},
-  eng_done: {% if progress and progress.eng_done %}true{% else %}false{% endif %},
-  career_sparks_done: {% if progress and progress.career_sparks_done %}true{% else %}false{% endif %},
-  reflections: {{ progress.reflections | tojson if (progress and progress.reflections) else '{}' }}
-};
-</script>
 </head>
-
+<body>
 
 <div class="bg-canvas" id="bg-canvas">
   <!-- Symbol layer -->
@@ -1806,15 +1811,13 @@ function awardXP(n){
 }
 
 init();
-
-// Use real server data if available
 if(typeof window.HS_USER !== 'undefined' && window.HS_USER.id) {
   student = {
     id: window.HS_USER.id,
     name: window.HS_USER.name,
     grade: window.HS_USER.grade || 7,
     school: window.HS_USER.school || 'F.D. Moon Middle School',
-    emoji: String.fromCodePoint(0x1F31F),
+    emoji: '\u2728',
     color: '#f5c842',
     xp: window.HS_USER.xp || 0,
     cluster: window.HS_USER.cluster || null,
@@ -1829,33 +1832,29 @@ if(typeof window.HS_USER !== 'undefined' && window.HS_USER.id) {
     preAssessmentDone: p.pre_done || false,
     quizDone: p.career_sparks_done || false,
     clusterName: window.HS_USER.cluster || null,
-    sparkScores: {},
-    sparkCollected: [],
+    sparkScores: {}, sparkCollected: [],
     sparkPhase: p.career_sparks_done ? 'done' : 'collect'
   };
-  if(p.reflections) { Object.assign(answers, p.reflections); }
-  window.saveToServer = function(module, xpDelta) {
-    fetch('/student/api/progress', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        cluster: student.cluster, xp: student.xp, xp_delta: xpDelta || 0,
-        money_mod: answers.moneyMod || 0, think_q: answers.thinkQ || 0,
-        ai_mod: answers.aiMod || 0, story_done: !!answers.storyStarted,
-        eng_done: !!answers.engDone, module: module || 'general',
-        reflections: Object.fromEntries(
-          Object.entries(answers).filter(function(e){ return e[0].startsWith('reflect_') || e[0].startsWith('aiReflect_'); })
-        )
+  if(p.reflections) Object.assign(answers, p.reflections);
+  window.saveToServer = function(mod, xp) {
+    fetch('/student/api/progress', {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:xp||0,
+        money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,
+        story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:mod||'general',
+        reflections:Object.fromEntries(Object.entries(answers).filter(function(e){
+          return e[0].startsWith('reflect_')||e[0].startsWith('aiReflect_');
+        }))
       })
     }).catch(function(){});
   };
-  var _origXP = awardXP;
-  awardXP = function(n) { _origXP(n); window.saveToServer('xp', n); };
+  var _ox=awardXP; awardXP=function(n){_ox(n);window.saveToServer('xp',n);};
 } else {
-  student = JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-  answers = {};
+  student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
+  answers={};
 }
-quizState = {q:0,scores:{}};
+quizState={q:0,scores:{}};
 showTab('home');
+
 </script>
+</body>
 </html>
