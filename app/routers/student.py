@@ -77,21 +77,3 @@ async def get_me(user=Depends(require_user)):
             "ai_mod": p.ai_mod if p else 0, "eng_done": p.eng_done if p else False,
             "career_sparks_done": p.career_sparks_done if p else False,
             "reflections": p.reflections if p else {}} if p else {}}
-
-@router.get("/business-builder", response_class=HTMLResponse)
-async def business_builder(request: Request, user=Depends(require_user), db: Session = Depends(get_db)):
-    if user.role in ("admin", "teacher"):
-        return RedirectResponse(url="/admin/dashboard", status_code=302)
-    
-    if not user.progress:
-        p = StudentProgress(user_id=user.id)
-        db.add(p)
-        db.commit()
-        db.refresh(user)
-
-    return templates.TemplateResponse("student/business_builder.html", {
-        "request": request,
-        "user": user,
-        "progress": user.progress,
-        "cluster": user.cluster or "Tech & Innovation"
-    })
