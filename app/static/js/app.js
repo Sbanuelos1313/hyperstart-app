@@ -1,4 +1,3 @@
-
 const PERSONAS=[
   {id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:0,cluster:null,tab:'home',preScores:{},desc:'7th grade · F.D. Moon · Starting fresh'},
   {id:'mateo',name:'Mateo Rivera',grade:8,school:'Classen SAS',emoji:'⚡',color:'#2dd4bf',xp:150,cluster:'Tech & Innovation',tab:'pathways',preScores:{conf:2,aware:2,solve:3,id:2},desc:'8th grade · Classen SAS · Exploring careers'},
@@ -1300,27 +1299,29 @@ function awardXP(n){
   setTimeout(function(){t.remove();},2300);
 }
 
-init();
-fetch('/student/api/me',{credentials:'include'})
-.then(function(r){return r.json();})
-.then(function(data){
-  if(data&&data.id){
-    student={id:data.id,name:data.name,grade:data.grade||7,school:data.school||'F.D. Moon Middle School',emoji:'\u2728',color:'#f5c842',xp:data.xp||0,cluster:data.cluster||null,tab:'home'};
-    var p=data.progress||{};
-    answers={moneyMod:p.money_mod||0,thinkQ:p.think_q||0,aiMod:p.ai_mod||0,storyStarted:p.story_done||false,preAssessmentDone:p.pre_done||false,quizDone:p.career_sparks_done||false,clusterName:data.cluster||null,sparkScores:{},sparkCollected:[],sparkPhase:p.career_sparks_done?'done':'collect'};
-    if(p.reflections)Object.assign(answers,p.reflections);
-    var _ox=awardXP;
-    awardXP=function(n){_ox(n);fetch('/student/api/progress',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:n||0,money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:'general'})}).catch(function(){});};
-  }else{
+document.addEventListener('DOMContentLoaded', function() {
+  init();
+  fetch('/student/api/me',{credentials:'include'})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data&&data.id){
+      student={id:data.id,name:data.name,grade:data.grade||7,school:data.school||'F.D. Moon Middle School',emoji:'\u2728',color:'#f5c842',xp:data.xp||0,cluster:data.cluster||null,tab:'home'};
+      var p=data.progress||{};
+      answers={moneyMod:p.money_mod||0,thinkQ:p.think_q||0,aiMod:p.ai_mod||0,storyStarted:p.story_done||false,preAssessmentDone:p.pre_done||false,quizDone:p.career_sparks_done||false,clusterName:data.cluster||null,sparkScores:{},sparkCollected:[],sparkPhase:p.career_sparks_done?'done':'collect'};
+      if(p.reflections)Object.assign(answers,p.reflections);
+      var _ox=awardXP;
+      awardXP=function(n){_ox(n);fetch('/student/api/progress',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({cluster:student.cluster,xp:student.xp,xp_delta:n||0,money_mod:answers.moneyMod||0,think_q:answers.thinkQ||0,ai_mod:answers.aiMod||0,story_done:!!answers.storyStarted,eng_done:!!answers.engDone,module:'general'})}).catch(function(){});};
+    }else{
+      student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
+      answers={};
+    }
+    quizState={q:0,scores:{}};
+    showTab('home');
+  }).catch(function(){
     student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-    answers={};
-  }
-  quizState={q:0,scores:{}};
-  showTab('home');
-}).catch(function(){
-  student=JSON.parse(JSON.stringify(PERSONAS.find(function(p){return p.id==='zara';})));
-  answers={};quizState={q:0,scores:{}};
-  showTab('home');
+    answers={};quizState={q:0,scores:{}};
+    showTab('home');
+  });
 });
 
 window.showTab = showTab;
@@ -1336,3 +1337,5 @@ window.updateBudgetChallenge = updateBudgetChallenge;
 window.clusterKey = clusterKey;
 window.awardXP = awardXP;
 window.buildInterestGrid = buildInterestGrid;
+window.renderHome = renderHome;
+window.showTab = showTab;
