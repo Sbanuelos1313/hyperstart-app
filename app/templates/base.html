@@ -2,41 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>{% block title %}HyperStart{% endblock %} — STEM/STEAM Pathways</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230a0e1a%27/%3E%3Crect x=%2716%27 y=%2718%27 width=%2721%27 height=%2764%27 rx=%2710%27 fill=%27%235b8ecf%27/%3E%3Crect x=%2763%27 y=%2718%27 width=%2721%27 height=%2764%27 rx=%2710%27 fill=%27%239b6a7a%27/%3E%3Crect x=%2716%27 y=%2740%27 width=%2768%27 height=%2720%27 rx=%2710%27 fill=%27%23f5c842%27/%3E%3C/svg%3E">
-<style>
-:root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.14);--gold:#f5c842;--gold-d:rgba(245,200,66,0.1);--teal:#2dd4bf;--teal-d:rgba(45,212,191,0.1);--violet:#a78bfa;--violet-d:rgba(167,139,250,0.1);--coral:#fb7185;--coral-d:rgba(251,113,133,0.1);--green:#4ade80;--green-d:rgba(74,222,128,0.1);--amber:#fb923c;--text:#f0f4ff;--muted:#8b95b0;--r:14px;--r-sm:8px}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 22px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;line-height:1;}
-.btn-gold{background:var(--gold);color:#0a0e1a;}
-.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px);}
-.btn-out{background:transparent;color:var(--text);border:1px solid var(--border-hi);}
-.btn-out:hover{border-color:var(--gold);color:var(--gold);}
-.btn-teal{background:var(--teal);color:#0a0e1a;}
-.btn-sm{padding:8px 14px;font-size:13px;}
-.btn-block{width:100%;display:flex;}
-.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color .2s;}
-.h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,5vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:6px;}
-.h1 .a{color:var(--gold);}
-.h2{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin-bottom:5px;}
-.lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block;}
-.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-right:5px;}
-.tg{background:var(--gold-d);color:var(--gold);border:1px solid rgba(245,200,66,.22);}
-.tt{background:var(--teal-d);color:var(--teal);border:1px solid rgba(45,212,191,.22);}
-.tv{background:var(--violet-d);color:var(--violet);border:1px solid rgba(167,139,250,.22);}
-.flex{display:flex;}.aic{align-items:center;}.jb{justify-content:space-between;}.g8{gap:8px;}.g12{gap:12px;}
-.mt4{margin-top:4px;}.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mb4{margin-bottom:4px;}.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb16{margin-bottom:16px;}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}HyperStart{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 {% block extra_styles %}{% endblock %}
 </head>
 <body>
 {% block body %}{% endblock %}
-<script>
-{% block scripts %}{% endblock %}
-</script>
+<script>{% block scripts %}{% endblock %}</script>
 </body>
 </html>

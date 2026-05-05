@@ -1,9 +1,50 @@
-from fastapi import APIRouter, Request, Depends
-from app.database import get_db
-from app.auth import get_current_user
-
-router = APIRouter()
-
-@router.get("/health")
-async def health():
-    return {"status": "ok", "service": "HyperStart"}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HyperStart — STEM/STEAM Pathways</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"DM Sans",sans-serif;background:#0a0e1a;color:#f0f4ff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(245,200,66,0.06),transparent 60%);pointer-events:none;}
+.hero{max-width:560px;position:relative;z-index:1;}
+.title{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(36px,8vw,56px);font-weight:800;line-height:1.1;margin-bottom:12px;}
+.title span{color:#f5c842;}
+.sub{font-size:16px;color:#8b95b0;line-height:1.65;margin-bottom:32px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px;}
+.pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;text-transform:uppercase;}
+.p1{background:rgba(45,212,191,0.1);color:#2dd4bf;border:1px solid rgba(45,212,191,0.3);}
+.p2{background:rgba(245,200,66,0.1);color:#f5c842;border:1px solid rgba(245,200,66,0.3);}
+.p3{background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{padding:14px 32px;border-radius:8px;font-family:"DM Sans",sans-serif;font-size:16px;font-weight:700;cursor:pointer;border:none;text-decoration:none;display:inline-block;}
+.btn-gold{background:#f5c842;color:#0a0e1a;}
+.btn-out{background:transparent;color:#f0f4ff;border:1px solid rgba(255,255,255,0.15);}
+</style>
+</head>
+<body>
+<div class="hero">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="72" height="72" style="margin:0 auto 20px">
+    <rect width="100" height="100" rx="22" fill="#111827"/>
+    <rect x="16" y="18" width="21" height="64" rx="10" fill="#5b8ecf"/>
+    <rect x="63" y="18" width="21" height="64" rx="10" fill="#9b6a7a"/>
+    <rect x="16" y="40" width="68" height="20" rx="10" fill="#f5c842"/>
+  </svg>
+  <div class="title">Hyper<span>Start</span></div>
+  <div class="sub">STEM/STEAM career pathways for grades 6-8.<br>Discover your match. Build real skills. See your future.</div>
+  <div class="pills">
+    <span class="pill p1">Northeast OKC</span>
+    <span class="pill p2">Millwood</span>
+    <span class="pill p1">F.D. Moon</span>
+    <span class="pill p3">Classen SAS</span>
+    <span class="pill p2">2026-27</span>
+  </div>
+  <div class="cta">
+    <a href="/auth/login" class="btn btn-gold">Start My Journey &rarr;</a>
+    <a href="/admin/dashboard" class="btn btn-out">Admin Dashboard</a>
+  </div>
+</div>
+</body>
+</html>
