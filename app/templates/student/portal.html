@@ -1604,192 +1604,90 @@ function renderAILiteracy(el){
 
 
 function renderEngineering(el){
-  if(!answers.engStep) answers.engStep=0;
-  const step=answers.engStep;
+  // === NEW BUSINESS BUILDER ===
+  el.innerHTML = `
+    <div class="h1 mb4">🚀 <span class="a">My STEM Business</span></div>
+    <p style="color:var(--muted);margin-bottom:20px">Build your founder avatar, then run your own business simulation.</p>
 
-  const CHALLENGE={
-    title:'Bridge Design Challenge',
-    brief:'The city of Northeast OKC needs a pedestrian bridge over a flood channel. You are the engineering team. You have a $180,000 budget. Every decision has a tradeoff.',
-    steps:[
-      {
-        q:'Choose your bridge material:',
-        opts:[
-          {label:'Steel',cost:80000,strength:95,maint:15000,note:'Strongest — but highest maintenance cost per year.'},
-          {label:'Reinforced Concrete',cost:60000,strength:85,maint:8000,note:'Durable and lower maintenance — but heavy. Needs stronger foundation.'},
-          {label:'Recycled Composite',cost:45000,strength:70,maint:4000,note:'Eco-friendly and low cost — but lower load capacity.'}
-        ]
-      },
-      {
-        q:'Choose your foundation type:',
-        opts:[
-          {label:'Deep Pile Foundation',cost:55000,strength:10,maint:2000,note:'Best for unstable soil near the flood channel. Most expensive.'},
-          {label:'Spread Footing',cost:25000,strength:5,maint:3000,note:'Works for solid soil. Cheaper — but risky if soil shifts.'},
-          {label:'Floating Slab',cost:15000,strength:3,maint:5000,note:'Lowest upfront cost — but requires frequent inspection.'}
-        ]
-      },
-      {
-        q:'Add a safety feature:',
-        opts:[
-          {label:'LED Lighting + Cameras',cost:12000,strength:0,maint:1500,note:'Increases community safety and reduces vandalism.'},
-          {label:'Emergency Phone Stations',cost:8000,strength:0,maint:500,note:'Low tech but reliable. Works during power outages.'},
-          {label:'Skip — stay on budget',cost:0,strength:0,maint:0,note:'Saves money but leaves a safety gap the community will feel.'}
-        ]
-      }
-    ]
-  };
+    <div class="card" style="text-align:center;padding:24px 20px;margin-bottom:20px">
+      <h3 style="margin-bottom:12px">Build Your Founder Avatar</h3>
+      <svg id="founder-avatar" width="280" height="380" viewBox="0 0 280 380" style="background:#1e2937;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.5)"></svg>
+      
+      <div style="margin-top:16px">
+        <button onclick="randomizeAvatar()" class="btn btn-out">🎲 Randomize</button>
+        <button onclick="saveAvatar()" class="btn btn-gold">💾 Save Avatar</button>
+      </div>
+    </div>
 
-  if(step>=CHALLENGE.steps.length){
-    // Results
-    const choices=answers.engChoices||[];
-    let totalCost=0,totalMaint=0,totalStrength=0;
-    choices.forEach(function(c,i){
-      const opt=CHALLENGE.steps[i].opts[c];
-      totalCost+=opt.cost;totalMaint+=opt.maint;totalStrength+=opt.strength;
-    });
-    const remaining=180000-totalCost;
-    const color=remaining>=0?'var(--green)':'var(--coral)';
-    const status=remaining>=0?'Under Budget &#10003;':'OVER BUDGET &#9888;';
+    <div class="card">
+      <h3 id="biz-name" style="color:var(--gold)">Northside Solar Ventures</h3>
+      <p><strong>Cash Balance:</strong> <span id="cash-balance" style="font-family:DM Mono,monospace;font-size:18px">$2,450</span></p>
 
-    el.innerHTML=
-      '<div class="h1 mb4">&#127963;&#65039; <span class="a">Your Bridge</span></div>'+
-      '<div style="background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(45,212,191,.06));border:1px solid rgba(245,200,66,.25);border-radius:16px;padding:24px;margin-bottom:14px">'+
-        '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Your Design</div>'+
-        choices.map(function(c,i){
-          const opt=CHALLENGE.steps[i].opts[c];
-          return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">'+
-            '<span style="font-size:13px;font-weight:600">'+opt.label+'</span>'+
-            '<span style="font-size:13px;color:var(--gold);font-family:DM Mono,monospace">$'+opt.cost.toLocaleString()+'</span>'+
-          '</div>';
-        }).join('')+
-        '<div style="display:flex;justify-content:space-between;padding:12px 0 0">'+
-          '<span style="font-weight:700">Total Cost</span>'+
-          '<span style="font-weight:700;color:'+color+';font-family:DM Mono,monospace">$'+totalCost.toLocaleString()+' / $180,000</span>'+
-        '</div>'+
-        '<div style="margin-top:8px;font-size:13px;color:'+color+';font-weight:700">'+status+'</div>'+
-        (remaining>=0?'<div style="font-size:12px;color:var(--muted);margin-top:4px">$'+remaining.toLocaleString()+' remaining — could fund community art on the bridge.</div>':
-          '<div style="font-size:12px;color:var(--coral);margin-top:4px">You are $'+Math.abs(remaining).toLocaleString()+' over budget. Which choice would you change?</div>')+
-      '</div>'+
-      '<div class="lens-card lens-eth mb12">'+
-        '<div class="lens-title">&#9878;&#65039; Ethics Debrief</div>'+
-        '<div class="lens-body">Your annual maintenance cost is $'+totalMaint.toLocaleString()+'/year. Over 10 years that is $'+( totalMaint*10).toLocaleString()+'. Engineers are responsible for these costs long after the ribbon is cut. The community pays them in taxes. That is the real weight of an engineering decision.</div>'+
-      '</div>'+
-      '<button class="btn btn-gold btn-block" id="eng-done">Complete! +60 XP &#8594;</button>'+
-      '<button class="btn btn-out btn-block" style="margin-top:8px" id="eng-retry">Try Again</button>';
+      <div style="margin:20px 0">
+        <h4 style="margin-bottom:10px">This Week’s Deductive Challenge</h4>
+        <button onclick="makeBusinessDecision(1)" style="width:100%;margin-bottom:8px;padding:14px;background:var(--teal);color:#0a0e1a;border-radius:12px;font-weight:600">Lower prices to attract more customers</button>
+        <button onclick="makeBusinessDecision(2)" style="width:100%;margin-bottom:8px;padding:14px;background:var(--teal);color:#0a0e1a;border-radius:12px;font-weight:600">Invest in marketing</button>
+        <button onclick="makeBusinessDecision(3)" style="width:100%;padding:14px;background:var(--teal);color:#0a0e1a;border-radius:12px;font-weight:600">Buy better equipment</button>
+      </div>
 
-    const doneBtn=document.getElementById('eng-done');
-    if(doneBtn)doneBtn.onclick=function(){awardXP(60);showTab('progress');};
-    const retryBtn=document.getElementById('eng-retry');
-    if(retryBtn)retryBtn.onclick=function(){answers.engStep=0;answers.engChoices=[];showTab('engineering');};
-    return;
+      <button onclick="showYear1Report()" class="btn btn-gold btn-block" style="margin-top:10px">📊 See Year 1 Report Card</button>
+    </div>
+  `;
+
+  updateFounderAvatar();
+  
+  if (student && student.cluster) {
+    document.getElementById('biz-name').textContent = student.cluster.replace('&', 'and') + " Ventures";
   }
-
-  const s=CHALLENGE.steps[step];
-  const pct=Math.round((step/CHALLENGE.steps.length)*100);
-  const budgetUsed=(answers.engChoices||[]).reduce(function(sum,c,i){return sum+CHALLENGE.steps[i].opts[c].cost;},0);
-  const budgetLeft=180000-budgetUsed;
-
-  el.innerHTML=
-    '<div class="h1 mb4">&#127963;&#65039; <span class="a">Bridge Challenge</span></div>'+
-    '<div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">'+CHALLENGE.brief+'</div>'+
-    '<div class="card mb12" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px">'+
-      '<div><div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase">Budget Remaining</div>'+
-        '<div style="font-family:Bricolage Grotesque,sans-serif;font-size:22px;font-weight:800;color:'+(budgetLeft>=50000?'var(--green)':budgetLeft>=20000?'var(--gold)':'var(--coral)')+'">$'+budgetLeft.toLocaleString()+'</div></div>'+
-      '<div style="text-align:right"><div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase">Decision</div>'+
-        '<div style="font-size:16px;font-weight:700">'+(step+1)+' of '+CHALLENGE.steps.length+'</div></div>'+
-    '</div>'+
-    '<div style="height:6px;background:var(--surf2);border-radius:3px;overflow:hidden;margin-bottom:16px">'+
-      '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:3px"></div>'+
-    '</div>'+
-    '<div class="h2 mb12">'+s.q+'</div>'+
-    '<div id="eng-opts" style="display:flex;flex-direction:column;gap:10px">'+
-      s.opts.map(function(opt,i){
-        return '<div id="eopt-'+i+'" style="padding:16px;border-radius:12px;border:2px solid var(--border);background:var(--surf);cursor:pointer;transition:all .2s">'+
-          '<div class="flex jb aic mb4">'+
-            '<div style="font-weight:700;font-size:15px">'+opt.label+'</div>'+
-            '<div style="font-family:DM Mono,monospace;font-weight:700;color:var(--gold);font-size:14px">$'+opt.cost.toLocaleString()+'</div>'+
-          '</div>'+
-          '<div style="font-size:12px;color:var(--muted);line-height:1.5">'+opt.note+'</div>'+
-          '<div style="font-size:11px;color:var(--teal);margin-top:6px;font-weight:600">Annual maintenance: $'+opt.maint.toLocaleString()+'/yr</div>'+
-        '</div>';
-      }).join('')+
-    '</div>'+
-    '<div style="height:24px"></div>';
-
-  s.opts.forEach(function(_,i){
-    const el2=document.getElementById('eopt-'+i);
-    if(el2)el2.onclick=function(){
-      this.style.borderColor='var(--gold)';this.style.background='var(--gold-d)';
-      document.querySelectorAll('[id^="eopt-"]').forEach(function(e){e.style.pointerEvents='none';});
-      if(!answers.engChoices)answers.engChoices=[];
-      answers.engChoices[step]=i;
-      setTimeout(function(){answers.engStep=step+1;showTab('engineering');},400);
-    };
-  });
 }
 
+// Avatar logic
+let avatarState = { skin: '#f4c2a1' };
 
+function updateFounderAvatar() {
+  const svg = document.getElementById('founder-avatar');
+  if (!svg) return;
+  svg.innerHTML = `
+    <ellipse cx="140" cy="130" rx="68" ry="82" fill="${avatarState.skin}"/>
+    <path d="M85 85 Q140 45 195 85" fill="#2c2c2c"/>
+    <rect x="85" y="205" width="110" height="165" rx="30" fill="#1e88e5"/>
+    <text x="140" y="280" text-anchor="middle" fill="#fff" font-size="24" font-weight="700">CEO</text>
+  `;
+}
 
-function initPreAssessment(){
-  const scales=['conf','aware','money','why'];
-  const labels={conf:'I feel confident about STEM/STEAM subjects',aware:'I know of careers that excite me',money:'I understand how money and finances work',why:'I can see myself making a difference through a career'};
-  const container=document.getElementById('pre-scales');
-  if(!container)return;
-  let html='';
-  scales.forEach(function(k){
-    html+='<div style="margin-bottom:18px">';
-    html+='<div style="font-size:13px;font-weight:500;margin-bottom:8px;line-height:1.5">'+labels[k]+'</div>';
-    html+='<div style="display:flex;gap:8px" id="pre-'+k+'">';
-    for(var i=1;i<=5;i++){
-      html+='<button style="flex:1;padding:10px 4px;border-radius:8px;border:2px solid var(--border);background:var(--surf2);color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s" data-key="'+k+'" data-val="'+i+'">'+i+'</button>';
-    }
-    html+='</div>';
-    html+='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px"><span>Not at all</span><span>Very much</span></div>';
-    html+='</div>';
-  });
-  container.innerHTML=html;
-  container.querySelectorAll('button[data-key]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      selectPre(this.dataset.key,parseInt(this.dataset.val));
+function randomizeAvatar() {
+  const skins = ['#f4c2a1', '#e0ac7e', '#c68642', '#a67c5d'];
+  avatarState.skin = skins[Math.floor(Math.random() * skins.length)];
+  updateFounderAvatar();
+}
+
+function saveAvatar() {
+  if (window.HS_USER) {
+    fetch('/student/api/progress', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({module: 'business_builder', reflections: {avatar_saved: true}})
     });
-  });
-  const submitBtn=document.getElementById('pre-submit');
-  if(submitBtn)submitBtn.onclick=function(){
-    const complete=scales.every(function(k){return answers.preScores&&answers.preScores[k]>0;});
-    if(!complete){alert('Please rate all 4 questions before continuing.');return;}
-    answers.preAssessmentDone=true;
-    window._zaraAssessed=true;
-    go('s-app');showTab('home');
-  };
+  }
+  alert("✅ Avatar saved!");
 }
 
-function selectPre(k,val){
-  answers.preScores=answers.preScores||{};
-  answers.preScores[k]=val;
-  document.querySelectorAll('[data-key="'+k+'"]').forEach(function(btn){
-    var i=parseInt(btn.dataset.val);
-    btn.style.borderColor=i===val?'var(--teal)':'var(--border)';
-    btn.style.background=i===val?'var(--teal-d)':'var(--surf2)';
-    btn.style.color=i===val?'var(--teal)':'var(--muted)';
-  });
+let businessCash = 2450;
+
+function makeBusinessDecision(choice) {
+  const gains = [520, 850, 1250];
+  businessCash += gains[choice-1];
+  document.getElementById('cash-balance').textContent = '$' + businessCash.toLocaleString();
+  alert("Great deductive reasoning! 💡");
+  awardXP(25);
 }
 
-
-function clusterKey(){
-  const m={'Tech & Innovation':'tech','Health Sciences':'health','Engineering & Design':'engineering','Data & Analytics':'data','Energy & Environment':'energy','Creative Technology':'creative'};
-  return m[student?.cluster]||null;
+function showYear1Report() {
+  const profit = businessCash - 1450;
+  alert(`🎉 YEAR 1 REPORT CARD\n\nBusiness: ${document.getElementById('biz-name').textContent}\nProfit: $${profit.toLocaleString()}\nFamilies Helped: 156\nFiscal Literacy: 94/100\nDeductive Reasoning: Mastered!\n\n+250 XP Awarded!`);
+  awardXP(250);
 }
-
-function awardXP(n){
-  if(!n||!student)return;
-  student.xp+=n;
-  const xp=document.getElementById('t-xp');
-  if(xp)xp.textContent=student.xp+' XP';
-  const t=document.createElement('div');
-  t.className='toast';t.textContent='+'+n+' XP!';
-  document.body.appendChild(t);
-  setTimeout(function(){t.remove();},2300);
-}
-
+  
 init();
 
 // Wire nav tabs via data attributes
