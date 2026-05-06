@@ -10,7 +10,7 @@
 :root{--bg:#0f172a;--surf:#1e2937;--surf2:#334155;--border:rgba(255,255,255,0.1);--gold:#facc15;--teal:#22d3ee;--accent:#f472b6;--muted:#94a3b8;--r:20px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f1f5f9;height:100vh;overflow:hidden;position:relative}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(34,211,238,0.3),transparent 60%),radial-gradient(circle at 70% 80%,rgba(250,204,21,0.25),transparent 60%);}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(34,211,238,0.25),transparent 50%),radial-gradient(circle at 70% 80%,rgba(250,204,21,0.2),transparent 50%);}
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
 .btn{display:block;width:100%;padding:16px;border-radius:14px;background:var(--gold);color:#0f172a;font-weight:700;text-align:center;margin-top:12px;cursor:pointer}
 .btn-teal{background:var(--teal);color:#0f172a}
@@ -19,7 +19,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .bottom-nav > div{flex:1;text-align:center;cursor:pointer;padding:8px 4px}
 .xp-header{color:var(--gold);font-weight:700;font-size:16px}
 .avatar{display:flex;justify-content:center;margin:20px 0}
-.avatar-inner{width:140px;height:140px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:70px;box-shadow:0 0 35px rgba(34,211,238,0.6);border:6px solid rgba(255,255,255,0.2);}
+.avatar-inner{width:130px;height:130px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:0 0 30px rgba(34,211,238,0.5);}
 </style>
 </head>
 <body>
@@ -44,10 +44,10 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <script>
-console.log("✅ HyperStart - Avatar Dashboard V2");
+console.log("✅ HyperStart - Avatar Dashboard Style");
 
 // State
-let student = {name: "Zara Williams", xp: 245};
+let student = {name: "Zara Williams", xp: 245, grade: 7};
 
 // Navigation
 function showTab(tab) {
@@ -70,7 +70,7 @@ function renderHome(el) {
   const name = student.name.split(' ')[0];
   el.innerHTML = `
     <div class="h1">Hey, ${name} 👋</div>
-    <p style="color:var(--muted)">Let's build something awesome today!</p>
+    <p style="color:var(--muted);margin-bottom:24px">Ready to build your future?</p>
     
     <div class="card" style="text-align:center">
       <div style="font-size:64px">📋</div>
@@ -100,38 +100,23 @@ function renderPathways(el) {
   `;
 }
 window.pickInterest = function(key) {
-  alert("Great choice! +50 XP");
+  alert("Great choice! Strong match. +50 XP");
   student.xp += 50;
   updateXP();
 };
 
-// MONEY
+// MONEY, THINK, BUILD (with good avatar style)
 function renderMoney(el) {
-  el.innerHTML = `
-    <div class="h1">Life & Money Skills</div>
-    <div class="card">
-      <h3>Monthly Budget Challenge</h3>
-      <p>You have <strong>$896</strong> this month.</p>
-      <button onclick="startBudgetChallenge()" class="btn">Start Challenge</button>
-    </div>
-  `;
+  el.innerHTML = `<div class="h1">Life & Money Skills</div><div class="card"><h3>Budget Challenge</h3><button onclick="startBudgetChallenge()" class="btn">Start Challenge</button></div>`;
 }
 window.startBudgetChallenge = function() {
-  alert("Smart choices! +60 XP");
+  alert("Awesome budgeting! +60 XP");
   student.xp += 60;
   updateXP();
 };
 
-// THINK
 function renderThink(el) {
-  el.innerHTML = `
-    <div class="h1">Big Questions</div>
-    <div class="card">
-      <h3>How do we use technology responsibly?</h3>
-      <textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px" placeholder="Your thoughts..."></textarea>
-      <button onclick="saveReflection()" class="btn">Save Reflection (+25 XP)</button>
-    </div>
-  `;
+  el.innerHTML = `<div class="h1">Big Questions</div><div class="card"><h3>How do we use technology responsibly?</h3><textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px" placeholder="Your thoughts..."></textarea><button onclick="saveReflection()" class="btn">Save Reflection</button></div>`;
 }
 window.saveReflection = function() {
   alert("Reflection saved! +25 XP");
@@ -139,13 +124,12 @@ window.saveReflection = function() {
   updateXP();
 };
 
-// BUILD - Avatar Dashboard Style
 function renderEngineering(el) {
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
     <div class="card">
       <h3>Founder Avatar</h3>
-      <div class="avatar"><div class="avatar-inner">🧑‍💼</div></div>
+      <div class="avatar" id="avatar-container"><div class="avatar-inner">🧑‍💼</div></div>
       <div style="display:flex;gap:12px">
         <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf2);color:white">Randomize</button>
         <button onclick="saveAvatar()" class="btn">Save Avatar</button>
@@ -163,6 +147,8 @@ function renderEngineering(el) {
     </div>
     <button onclick="finishProgram()" class="btn" style="background:var(--accent)">Finish Program → Post-Assessment</button>
   `;
+  // Simple avatar
+  document.getElementById('avatar-container').innerHTML = `<div class="avatar-inner">🧑‍💼</div>`;
 }
 function randomizeAvatar() {
   const avatars = ['🧑‍💼','👩‍🔬','🧑‍🚀','👨‍💻','🧑‍🌾'];
