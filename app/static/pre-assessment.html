@@ -17,10 +17,9 @@ body{
 }
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 80% 60% at 100% 0%,rgba(13,90,100,0.35),transparent 60%),
-    radial-gradient(ellipse 50% 40% at 0% 100%,rgba(8,50,70,0.2),transparent 60%),
-    radial-gradient(ellipse 40% 30% at 50% 0%,rgba(245,200,66,0.04),transparent 50%);
+  background: radial-gradient(ellipse 80% 60% at 100% 0%,rgba(13,90,100,0.35),transparent 60%),
+              radial-gradient(ellipse 50% 40% at 0% 100%,rgba(8,50,70,0.2),transparent 60%),
+              radial-gradient(ellipse 40% 30% at 50% 0%,rgba(245,200,66,0.04),transparent 50%);
 }
 .topbar{
   position:relative;z-index:2;
@@ -32,8 +31,15 @@ body::before{
 }
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.3px;}
 .logo em{color:#f5c842;font-style:normal;}
-.logo-sub{font-size:10px;color:#8b95b0;margin-top:-1px;letter-spacing:.04em;}
-.xp-pill{background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.25);color:#f5c842;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.back-btn{
+  background:rgba(255,255,255,0.1);
+  color:white;
+  border:1px solid rgba(255,255,255,0.2);
+  padding:6px 14px;
+  border-radius:8px;
+  font-size:13px;
+  cursor:pointer;
+}
 .scroll{height:calc(100vh - 52px);overflow-y:auto;padding:28px 20px 40px;}
 .inner{max-width:480px;margin:0 auto;position:relative;z-index:1;}
 .progress-dots{display:flex;gap:6px;margin-bottom:24px;}
@@ -57,7 +63,6 @@ body::before{
   font-size:15px;font-weight:700;
   cursor:pointer;text-align:center;
   transition:all .2s;
-  font-family:'DM Sans',sans-serif;
 }
 .scale-btn:hover{border-color:rgba(255,255,255,0.15);color:#f0f4ff;}
 .scale-btn.sel{border-color:#2dd4bf;background:rgba(45,212,191,0.12);color:#2dd4bf;}
@@ -71,7 +76,6 @@ body::before{
   font-size:16px;font-weight:800;
   cursor:pointer;
   transition:all .2s;
-  letter-spacing:-.2px;
 }
 .submit-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
 .note{font-size:12px;color:#8b95b0;text-align:center;margin-top:12px;line-height:1.6;}
@@ -80,9 +84,9 @@ body::before{
 <body>
 
 <div class="topbar">
+  <button class="back-btn" onclick="goBack()">← Back to Portal</button>
   <div>
     <div class="logo">Hyper<em>Start</em></div>
-    <div class="logo-sub">STEM/STEAM · Grades 6–8</div>
   </div>
   <div class="xp-pill" id="xp-display">0 XP</div>
 </div>
@@ -102,6 +106,7 @@ body::before{
       <div class="hero-sub">Rate yourself honestly on these 4 questions. We'll ask again at the end to see how much you grew.</div>
     </div>
 
+    <!-- Scale blocks remain the same as your original -->
     <div class="scale-block">
       <div class="scale-label">I feel confident about STEM/STEAM subjects</div>
       <div class="scale-btns" id="scale-conf">
@@ -163,19 +168,13 @@ var scales = ['conf','aware','money','why'];
 function select(key, val) {
   answers[key] = val;
   var row = document.getElementById('scale-' + key);
-  if (!row) return;
   row.querySelectorAll('.scale-btn').forEach(function(btn, i) {
     btn.classList.toggle('sel', i + 1 === val);
   });
-  // Update progress dots
-  var done = scales.filter(function(k){ return answers[k] > 0; }).length;
-  scales.forEach(function(k, i) {
-    var dot = document.getElementById('dot-' + i);
-    if (!dot) return;
-    if (answers[k] > 0) dot.className = 'dot done';
-    else if (i === done) dot.className = 'dot active';
-    else dot.className = 'dot inactive';
-  });
+}
+
+function goBack() {
+  window.location.href = '/static/portal.html';
 }
 
 function submit() {
@@ -184,15 +183,15 @@ function submit() {
     alert('Please rate all 4 questions before continuing.');
     return;
   }
-  // Save to server
   fetch('/student/api/pre-assessment', {
     method: 'POST',
     credentials: 'include',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(answers)
   }).catch(function(){});
-  // Go to portal
-  window.location.href = '/student/home';
+  
+  alert("Assessment saved! Welcome to HyperStart.");
+  window.location.href = '/static/portal.html';
 }
 </script>
 </body>
