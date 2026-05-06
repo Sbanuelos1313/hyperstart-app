@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HyperStart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--gold:#f5c842;--teal:#2dd4bf;--violet:#a78bfa;--muted:#8b95b0;--r:14px}
+:root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--gold:#f5c842;--teal:#2dd4bf;--violet:#a78bfa;--muted:#8b95b0;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f0f4ff;height:100vh;overflow:hidden;position:relative}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 100% 0%,rgba(13,90,100,0.4),transparent 60%),radial-gradient(ellipse 60% 50% at 0% 100%,rgba(8,50,70,0.25),transparent 60%),radial-gradient(ellipse 50% 40% at 50% 0%,rgba(245,200,66,0.05),transparent 55%);}
@@ -15,17 +15,15 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .bg-symbol,.bg-word{position:absolute;animation:bgFloat linear infinite;white-space:nowrap;user-select:none;}
 .bg-symbol{font-size:clamp(16px,3vw,28px);opacity:0.04;color:#f0f4ff;}
 .bg-word{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(11px,2vw,16px);letter-spacing:0.15em;text-transform:uppercase;opacity:0.035;}
-.bg-word.teal{color:#2dd4bf;opacity:0.045;}
-.bg-word.gold{color:#f5c842;opacity:0.04;}
-.bg-word.violet{color:#a78bfa;opacity:0.04;}
 @keyframes bgFloat{0%{transform:translateY(100vh) rotate(var(--rot,0deg));opacity:0;}5%{opacity:0.04;}95%{opacity:0.04;}100%{transform:translateY(-20vh) rotate(var(--rot,0deg));opacity:0;}}
-.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
-.btn{display:block;width:100%;padding:14px;border-radius:8px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px}
+.btn{display:block;width:100%;padding:14px;border-radius:10px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
+.btn-secondary{background:var(--surf2);color:white}
 .h1{font-size:28px;font-weight:800;margin-bottom:8px}
 .h2{font-size:20px;font-weight:700}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex;font-size:12px;z-index:10}
 .bottom-nav > div{flex:1;text-align:center;cursor:pointer;padding:8px 4px}
-.xp-header{color:var(--gold);font-weight:700;font-size:15px;}
+.xp-header{color:var(--gold);font-weight:700}
 </style>
 </head>
 <body>
@@ -71,12 +69,10 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <script>
-console.log("✅ HyperStart - Full Upgraded Version");
+console.log("✅ HyperStart - Polished Unified Version");
 
-// Student State
 let student = {name: "Zara Williams", xp: 245, grade: 7};
 
-// Navigation
 function showTab(tab) {
   const inner = document.getElementById('app-inner');
   inner.innerHTML = '';
@@ -99,9 +95,10 @@ function renderHome(el) {
     <div class="h1">Hey, <span style="color:var(--gold)">${name}</span> 👋</div>
     <p>Welcome back. Let's build your future.</p>
     
-    <div class="card" style="text-align:center;padding:30px">
-      <div style="font-size:60px">📋</div>
+    <div class="card" style="text-align:center;padding:32px 20px">
+      <div style="font-size:64px">📋</div>
       <h2>Pre-Assessment</h2>
+      <p style="color:var(--muted);margin:12px 0">Help us track your growth</p>
       <button onclick="startPreAssessment()" class="btn" style="background:var(--teal)">Take Pre-Assessment →</button>
     </div>
 
@@ -114,48 +111,41 @@ function renderHome(el) {
 }
 window.startPreAssessment = () => window.location.href = '/static/pre-assessment.html';
 
-// PATHWAYS - Full Quiz
+// PATHWAYS
 function renderPathways(el) {
   el.innerHTML = `
     <div class="h1">Career Sparks</div>
-    <p style="color:var(--muted)">Choose what excites you most</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
-      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer">💻 Technology & Coding</div>
-      <div onclick="pickInterest('health')" class="card" style="cursor:pointer">🩺 Health Sciences</div>
-      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer">🛠️ Engineering & Design</div>
-      <div onclick="pickInterest('data')" class="card" style="cursor:pointer">📊 Data & Analytics</div>
-      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer">🌱 Energy & Environment</div>
-      <div onclick="pickInterest('creative')" class="card" style="cursor:pointer">🎨 Creative Technology</div>
+    <p style="color:var(--muted)">What sparks your interest most?</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer;text-align:center">💻 Technology</div>
+      <div onclick="pickInterest('health')" class="card" style="cursor:pointer;text-align:center">🩺 Health Sciences</div>
+      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer;text-align:center">🛠️ Engineering</div>
+      <div onclick="pickInterest('data')" class="card" style="cursor:pointer;text-align:center">📊 Data & Analytics</div>
+      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer;text-align:center">🌱 Energy & Environment</div>
+      <div onclick="pickInterest('creative')" class="card" style="cursor:pointer;text-align:center">🎨 Creative Tech</div>
     </div>
   `;
 }
 window.pickInterest = function(key) {
-  const clusterNames = {tech:"Tech & Innovation", health:"Health Sciences", eng:"Engineering & Design", data:"Data & Analytics", energy:"Energy & Environment", creative:"Creative Technology"};
-  alert(`Strong match for **${clusterNames[key]}**! +50 XP`);
+  alert(`Strong match for that cluster! +50 XP`);
   student.xp += 50;
   updateXP();
 };
 
-// MONEY - Interactive
+// MONEY
 function renderMoney(el) {
   el.innerHTML = `
     <div class="h1">Life & Money Skills</div>
     <div class="card">
-      <h3>Budget Challenge</h3>
-      <p>You earn $896 this month. Make smart choices.</p>
-      <button onclick="startBudgetChallenge()" class="btn">Start Budget Challenge</button>
+      <h3>Monthly Budget Challenge</h3>
+      <p>You have <strong>$896</strong> this month.</p>
+      <button onclick="startBudgetChallenge()" class="btn">Start Interactive Budget Challenge</button>
     </div>
   `;
 }
 window.startBudgetChallenge = function() {
-  const result = confirm("Did you stay under budget and make good choices?");
-  if (result) {
-    alert("Excellent budgeting! +60 XP");
-    student.xp += 60;
-  } else {
-    alert("Good effort. Try again next month. +20 XP");
-    student.xp += 20;
-  }
+  alert("Great job managing your budget! +60 XP");
+  student.xp += 60;
   updateXP();
 };
 
@@ -164,10 +154,10 @@ function renderThink(el) {
   el.innerHTML = `
     <div class="h1">Big Questions</div>
     <div class="card">
-      <h3>Question 1</h3>
-      <p>"How should we use powerful AI responsibly?"</p>
-      <textarea style="width:100%;height:120px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Your thoughts..."></textarea>
-      <button onclick="saveReflection()" class="btn">Save (+25 XP)</button>
+      <h3>Philosophy & Ethics</h3>
+      <p>"How do we use powerful technology responsibly?"</p>
+      <textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:14px" placeholder="Your thoughts..."></textarea>
+      <button onclick="saveReflection()" class="btn">Save Reflection (+25 XP)</button>
     </div>
   `;
 }
@@ -177,34 +167,34 @@ window.saveReflection = function() {
   updateXP();
 };
 
-// BUILD - Enhanced Avatar
+// BUILD
 function renderEngineering(el) {
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
     <div class="card">
       <h3>Founder Avatar</h3>
       <svg id="founder-avatar" width="260" height="340" viewBox="0 0 300 410"></svg>
-      <div style="margin:15px 0;display:flex;gap:10px">
-        <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf);color:white">Randomize</button>
+      <div style="margin:20px 0;display:flex;gap:12px">
+        <button onclick="randomizeAvatar()" class="btn btn-secondary">Randomize</button>
         <button onclick="saveAvatar()" class="btn">Save Avatar</button>
       </div>
     </div>
     <div class="card">
       <h3>Northside Ventures</h3>
       <p>Cash: <span id="cash-balance" style="font-weight:700;color:var(--gold)">$2,450</span></p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
-        <button onclick="makeBusinessDecision(1)" class="btn" style="background:var(--surf);color:white">Lower Prices</button>
-        <button onclick="makeBusinessDecision(2)" class="btn" style="background:var(--surf);color:white">Marketing</button>
-        <button onclick="makeBusinessDecision(3)" class="btn" style="background:var(--surf);color:white">Equipment</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+        <button onclick="makeBusinessDecision(1)" class="btn btn-secondary">Lower Prices</button>
+        <button onclick="makeBusinessDecision(2)" class="btn btn-secondary">Marketing</button>
+        <button onclick="makeBusinessDecision(3)" class="btn btn-secondary">Equipment</button>
         <button onclick="showYear1Report()" class="btn" style="background:var(--teal)">Year 1 Report</button>
       </div>
     </div>
-    <button onclick="finishProgram()" class="btn" style="background:#2dd4bf;margin-top:20px">Finish Program → Post-Assessment</button>
+    <button onclick="finishProgram()" class="btn" style="background:#2dd4bf">Finish Program → Post-Assessment</button>
   `;
   updateFounderAvatar();
 }
 
-// Avatar + Business Logic
+// Avatar Logic
 let avatarState = {skin: '#f4c2a1'};
 function updateFounderAvatar() {
   const svg = document.getElementById('founder-avatar');
@@ -231,9 +221,7 @@ function finishProgram(){
 }
 
 // Start
-document.addEventListener('DOMContentLoaded', () => {
-  showTab('home');
-});
+document.addEventListener('DOMContentLoaded', () => showTab('home'));
 window.showTab = showTab;
 </script>
 </body>
