@@ -17,6 +17,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .bg-word{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(11px,2vw,16px);letter-spacing:0.15em;text-transform:uppercase;opacity:0.035;}
 .bg-word.teal{color:#2dd4bf;opacity:0.045;}
 .bg-word.gold{color:#f5c842;opacity:0.04;}
+.bg-word.violet{color:#a78bfa;opacity:0.04;}
 @keyframes bgFloat{0%{transform:translateY(100vh) rotate(var(--rot,0deg));opacity:0;}5%{opacity:0.04;}95%{opacity:0.04;}100%{transform:translateY(-20vh) rotate(var(--rot,0deg));opacity:0;}}
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
 .btn{display:block;width:100%;padding:14px;border-radius:8px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
@@ -29,7 +30,6 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 <body>
 
 <div class="bg-canvas">
-  <!-- Floating symbols and words (same as before) -->
   <div class="bg-symbol" style="left:8%;--rot:-12deg;animation-duration:55s">E=mc²</div>
   <div class="bg-symbol" style="left:22%;--rot:8deg;animation-duration:70s">🧬</div>
   <div class="bg-symbol" style="left:55%;--rot:15deg;animation-duration:62s">⚙️</div>
@@ -69,13 +69,12 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <script>
-console.log("✅ HyperStart - COMPLETE FULL VERSION");
+console.log("✅ HyperStart - Complete Demo Version");
 
-// Student Data
+// Student
 let student = {name: "Zara Williams", xp: 245, grade: 7};
-let answers = {};
 
-// Tab Navigation
+// Navigation
 function showTab(tab) {
   const inner = document.getElementById('app-inner');
   inner.innerHTML = '';
@@ -86,12 +85,20 @@ function showTab(tab) {
   else if (tab === 'engineering') renderEngineering(inner);
 }
 
-// ==================== HOME ====================
+// HOME
 function renderHome(el) {
   const name = student.name.split(' ')[0];
   el.innerHTML = `
     <div class="h1">Hey, <span style="color:var(--gold)">${name}</span> 👋</div>
     <p>Welcome back. Let's build your future.</p>
+    
+    <div class="card" style="text-align:center;padding:30px">
+      <div style="font-size:60px">📋</div>
+      <h2>Pre-Assessment</h2>
+      <p style="color:var(--muted)">Help us track your growth</p>
+      <button onclick="startPreAssessment()" class="btn">Take Pre-Assessment →</button>
+    </div>
+
     <div class="card" style="text-align:center;padding:40px 20px">
       <div style="font-size:70px">🚀</div>
       <div class="h2">Ready to Build Your Business?</div>
@@ -99,61 +106,61 @@ function renderHome(el) {
     </div>
   `;
 }
+window.startPreAssessment = function() {
+  window.location.href = '/student/pre-assessment';   // We'll set this route later
+};
 
-// ==================== PATHWAYS ====================
+// PATHWAYS
 function renderPathways(el) {
   el.innerHTML = `
     <div class="h1">Career Sparks</div>
-    <p style="color:var(--muted)">Tap what interests you most</p>
-    <div class="card" id="interest-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
-      <div class="card" onclick="pickInterest('tech')" style="cursor:pointer">💻 Technology</div>
-      <div class="card" onclick="pickInterest('health')" style="cursor:pointer">🩺 Health Sciences</div>
-      <div class="card" onclick="pickInterest('eng')" style="cursor:pointer">🛠️ Engineering</div>
-      <div class="card" onclick="pickInterest('data')" style="cursor:pointer">📊 Data & Analytics</div>
-      <div class="card" onclick="pickInterest('energy')" style="cursor:pointer">🌱 Energy & Environment</div>
-      <div class="card" onclick="pickInterest('creative')" style="cursor:pointer">🎨 Creative Technology</div>
-    </div>
-  `;
+    <div class="card"><p>Tap what sparks you most</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer">💻 Technology</div>
+      <div onclick="pickInterest('health')" class="card" style="cursor:pointer">🩺 Health</div>
+      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer">🛠️ Engineering</div>
+      <div onclick="pickInterest('data')" class="card" style="cursor:pointer">📊 Data</div>
+      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer">🌱 Energy</div>
+      <div onclick="pickInterest('creative')" class="card" style="cursor:pointer">🎨 Creative Tech</div>
+    </div></div>`;
 }
 window.pickInterest = function(key) {
-  alert("Great choice! You've been matched with a strong pathway in " + key.toUpperCase() + " cluster. +50 XP");
+  alert(`Great choice! Strong match for ${key.toUpperCase()} cluster. +50 XP`);
   student.xp += 50;
 };
 
-// ==================== MONEY ====================
+// MONEY
 function renderMoney(el) {
   el.innerHTML = `
     <div class="h1">Life & Money Skills</div>
     <div class="card">
       <h3>Budget Challenge</h3>
-      <p>You have <strong>$896</strong> per month. How will you spend it?</p>
+      <p>You have $896 this month.</p>
       <button onclick="startBudgetChallenge()" class="btn">Start Budget Challenge</button>
-    </div>
-  `;
+    </div>`;
 }
 window.startBudgetChallenge = function() {
-  alert("Budget Challenge Started!\n\nYou made smart choices and stayed under budget. +40 XP");
+  alert("Budget Challenge Complete!\nYou stayed under budget. +40 XP");
   student.xp += 40;
 };
 
-// ==================== THINK ====================
+// THINK
 function renderThink(el) {
   el.innerHTML = `
     <div class="h1">Big Questions</div>
     <div class="card">
-      <h3>Question 1 of 6</h3>
-      <p style="font-size:18px">"What does it mean to live a good life when technology can do so much for us?"</p>
-      <textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;color:white;padding:12px" placeholder="Write your thoughts..."></textarea>
+      <h3>Philosophy & Ethics</h3>
+      <p>"What does it mean to live a good life in the age of AI?"</p>
+      <textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Your thoughts..."></textarea>
       <button onclick="saveReflection()" class="btn">Save Reflection (+20 XP)</button>
-    </div>
-  `;
+    </div>`;
 }
 window.saveReflection = function() {
   alert("Reflection saved! +20 XP");
   student.xp += 20;
 };
 
-// ==================== BUILD ====================
+// BUILD (enhanced)
 function renderEngineering(el) {
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
@@ -161,8 +168,8 @@ function renderEngineering(el) {
       <h3>Founder Avatar</h3>
       <svg id="founder-avatar" width="260" height="340" viewBox="0 0 300 410"></svg>
       <div style="margin:15px 0;display:flex;gap:10px">
-        <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf);color:white">🎲 Randomize</button>
-        <button onclick="saveAvatar()" class="btn">💾 Save Avatar</button>
+        <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf);color:white">Randomize</button>
+        <button onclick="saveAvatar()" class="btn">Save Avatar</button>
       </div>
     </div>
     <div class="card">
@@ -171,14 +178,14 @@ function renderEngineering(el) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
         <button onclick="makeBusinessDecision(1)" class="btn" style="background:var(--surf);color:white">Lower Prices</button>
         <button onclick="makeBusinessDecision(2)" class="btn" style="background:var(--surf);color:white">Marketing</button>
-        <button onclick="makeBusinessDecision(3)" class="btn" style="background:var(--surf);color:white">Buy Equipment</button>
+        <button onclick="makeBusinessDecision(3)" class="btn" style="background:var(--surf);color:white">Equipment</button>
         <button onclick="showYear1Report()" class="btn" style="background:var(--teal)">Year 1 Report</button>
       </div>
-    </div>
-  `;
+    </div>`;
   updateFounderAvatar();
 }
 
+// Avatar & Business Logic (same as before)
 let avatarState = {skin: '#f4c2a1'};
 function updateFounderAvatar() {
   const svg = document.getElementById('founder-avatar');
@@ -186,7 +193,6 @@ function updateFounderAvatar() {
 }
 function randomizeAvatar(){ avatarState.skin = ['#f4c2a1','#e0ac7e','#c68642'][Math.floor(Math.random()*3)]; updateFounderAvatar(); }
 function saveAvatar(){ alert("Avatar saved!"); }
-
 let businessCash = 2450;
 function makeBusinessDecision(n){
   const gains = [620,920,1380];
@@ -195,15 +201,12 @@ function makeBusinessDecision(n){
   alert("Smart decision! +30 XP");
 }
 function showYear1Report(){
-  alert("🎉 Year 1 Report: Great job! Profit = $8,240. +280 XP");
+  alert("🎉 Year 1 Report: Great job! +280 XP");
   student.xp += 280;
 }
 
-// Start the app
-document.addEventListener('DOMContentLoaded', () => {
-  showTab('home');
-});
-
+// Start
+document.addEventListener('DOMContentLoaded', () => showTab('home'));
 window.showTab = showTab;
 </script>
 </body>
