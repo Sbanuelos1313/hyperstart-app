@@ -5,116 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HyperStart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f172a;--surf:#1e2937;--surf2:#334155;--border:rgba(255,255,255,0.1);--gold:#facc15;--teal:#22d3ee;--pink:#f472b6;--muted:#94a3b8;--r:20px}
+:root{--bg:#0a0e1a;--surf:#111827;--surf2:#1a2235;--border:rgba(255,255,255,0.07);--gold:#f5c842;--teal:#2dd4bf;--violet:#a78bfa;--muted:#8b95b0;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f1f5f9;height:100vh;overflow:hidden;position:relative}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(34,211,238,0.25),transparent 50%),radial-gradient(circle at 70% 80%,rgba(250,204,21,0.2),transparent 50%);}
-.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
-.btn{display:block;width:100%;padding:16px;border-radius:14px;background:var(--gold);color:#0f172a;font-weight:700;text-align:center;margin-top:12px;cursor:pointer;font-size:15.5px}
-.btn-teal{background:var(--teal);color:#0f172a}
-.h1{font-size:26px;font-weight:800;margin-bottom:6px}
-.h2{font-size:19px;font-weight:700}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:12px 0;background:rgba(15,23,42,0.95);border-top:1px solid #334155;display:flex;font-size:13px;z-index:10}
-.bottom-nav > div{flex:1;text-align:center;cursor:pointer;padding:8px 4px}
-.xp-header{color:var(--gold);font-weight:700}
-.avatar-circle{width:120px;height:120px;border-radius:50%;background:var(--teal);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 0 30px rgba(34,211,238,0.5);}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f0f4ff;height:100vh;overflow:hidden}
+.screen{display:none;height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.btn{display:block;width:100%;padding:14px;border-radius:8px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
+.h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.h2{font-size:20px;font-weight:700}
 </style>
 </head>
 <body>
 
-<div class="bg-canvas"></div>
-
-<div class="screen active" id="s-app" style="height:100vh;display:flex;flex-direction:column;position:relative;z-index:1">
-  <div style="padding:16px;background:rgba(15,23,42,0.95);border-bottom:1px solid #334155;z-index:2;display:flex;justify-content:space-between;align-items:center">
-    <div class="h1" style="display:flex;align-items:center;gap:12px">
-      HyperStart
-    </div>
-    <div class="xp-header" id="xp-display">245 XP</div>
+<div class="screen active" id="s-app">
+  <div style="padding:16px;background:rgba(10,14,26,0.95);border-bottom:1px solid #222">
+    <div class="h1">HyperStart <span style="color:var(--gold)">🚀</span></div>
   </div>
 
-  <div id="app-content" style="flex:1;overflow-y:auto;padding:20px;position:relative;z-index:2">
+  <div id="app-content" style="flex:1;overflow-y:auto;padding:20px">
     <div id="app-inner"></div>
   </div>
 
-  <div class="bottom-nav">
-    <div onclick="showTab('home')">🏠 Home</div>
-    <div onclick="showTab('pathways')">⚡ Pathways</div>
-    <div onclick="showTab('money')">💰 Money</div>
-    <div onclick="showTab('think')">🧠 Think</div>
-    <div onclick="showTab('engineering')">🏗️ Build</div>
+  <div style="padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex;font-size:12px">
+    <div onclick="showTab('home')" style="flex:1;text-align:center;cursor:pointer">🏠 Home</div>
+    <div onclick="showTab('pathways')" style="flex:1;text-align:center;cursor:pointer">⚡ Pathways</div>
+    <div onclick="showTab('money')" style="flex:1;text-align:center;cursor:pointer">💰 Money</div>
+    <div onclick="showTab('engineering')" style="flex:1;text-align:center;cursor:pointer;color:var(--gold)">🏗️ Build</div>
   </div>
 </div>
 
 <script>
-console.log("✅ HyperStart - Avatar Dashboard Style");
+console.log("✅ HyperStart - Full Demo Version");
 
-let student = {name: "Zara Williams", xp: 245, grade: 7};
+// Constants
+const PERSONAS = [{id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:120,cluster:'Engineering & Design'}];
 
-function showTab(tab) {
+let student = PERSONAS[0];
+let answers = {};
+
+// Navigation
+function showTab(tab){
   const inner = document.getElementById('app-inner');
   inner.innerHTML = '';
-  if (tab === 'home') renderHome(inner);
-  else if (tab === 'pathways') renderPathways(inner);
-  else if (tab === 'money') renderMoney(inner);
-  else if (tab === 'think') renderThink(inner);
-  else if (tab === 'engineering') renderEngineering(inner);
-  updateXP();
+  if(tab === 'home') renderHome(inner);
+  else if(tab === 'pathways') renderPathways(inner);
+  else if(tab === 'money') renderMoney(inner);
+  else if(tab === 'engineering') renderEngineering(inner);
 }
 
-function updateXP() {
-  document.getElementById('xp-display').textContent = student.xp + " XP";
-}
-
-// HOME
-function renderHome(el) {
+// Home
+function renderHome(el){
   const name = student.name.split(' ')[0];
   el.innerHTML = `
-    <div class="h1">Hey, ${name} 👋</div>
-    <p style="color:var(--muted);margin-bottom:24px">Ready to build something awesome?</p>
-    
-    <div class="card" style="text-align:center">
-      <div style="font-size:64px">📋</div>
-      <h2>Pre-Assessment</h2>
-      <button onclick="startPreAssessment()" class="btn btn-teal">Take Pre-Assessment →</button>
-    </div>
-
-    <div class="card" style="text-align:center">
-      <div style="font-size:64px">🚀</div>
-      <h2>Business Builder</h2>
-      <button onclick="showTab('engineering')" class="btn">Open My Startup →</button>
+    <div class="h1">Hey, <span style="color:var(--gold)">${name}</span> 👋</div>
+    <p>Welcome back. Let's build your future.</p>
+    <div class="card" style="text-align:center;margin:20px 0;padding:40px 20px">
+      <div style="font-size:70px">🚀</div>
+      <div class="h2">Ready to Build Your Business?</div>
+      <button onclick="showTab('engineering')" style="margin-top:20px">Open Business Builder →</button>
     </div>
   `;
 }
-window.startPreAssessment = () => window.location.href = '/static/pre-assessment.html';
 
-// PATHWAYS
-function renderPathways(el) {
+// Business Builder
+function renderEngineering(el){
   el.innerHTML = `
-    <div class="h1">What Problem Will You Solve?</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px">
-      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer;text-align:center">💻 Tech Innovator</div>
-      <div onclick="pickInterest('health')" class="card" style="cursor:pointer;text-align:center">🩺 Health Hero</div>
-      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer;text-align:center">🛠️ Engineer</div>
-      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer;text-align:center">🌱 Planet Protector</div>
+    <div class="h1">My STEM Business Builder</div>
+    <p style="color:var(--muted)">Build your avatar and run your business simulation.</p>
+    <div class="card">
+      <h3>Founder Avatar</h3>
+      <svg id="founder-avatar" width="280" height="380" viewBox="0 0 300 410"></svg>
+      <div style="margin:15px 0">
+        <button onclick="randomizeAvatar()" style="margin-right:8px">Randomize</button>
+        <button onclick="saveAvatar()">Save Avatar</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3 id="biz-name">Northside Ventures</h3>
+      <p>Cash: <span id="cash-balance" style="font-weight:700">$2,450</span></p>
+      <button onclick="makeBusinessDecision(1)" style="margin:8px 0">Lower Prices</button>
+      <button onclick="makeBusinessDecision(2)" style="margin:8px 0">Invest in Marketing</button>
+      <button onclick="makeBusinessDecision(3)" style="margin:8px 0">Buy Equipment</button>
+      <button onclick="showYear1Report()" style="background:var(--teal);margin-top:12px">See Year 1 Report</button>
     </div>
   `;
+  updateFounderAvatar();
 }
-window.pickInterest = function(key) {
-  alert("Great choice! You're going to be awesome at that. +50 XP");
-  student.xp += 50;
-  updateXP();
-};
 
-// MONEY, THINK, BUILD (similar enhanced style)
-function renderMoney(el) { el.innerHTML = `<div class="h1">Life & Money Skills</div><div class="card"><h3>Budget Challenge</h3><button onclick="startBudgetChallenge()" class="btn">Start Challenge</button></div>`; }
-function renderThink(el) { el.innerHTML = `<div class="h1">Big Questions</div><div class="card"><textarea style="width:100%;height:140px" placeholder="Share your thoughts..."></textarea><button onclick="saveReflection()" class="btn">Save Reflection</button></div>`; }
-function renderEngineering(el) { /* your favorite avatar builder style */ el.innerHTML = `... (full avatar code)`; }
+let avatarState = {skin: '#f4c2a1'};
+function updateFounderAvatar() {
+  const svg = document.getElementById('founder-avatar');
+  if (svg) svg.innerHTML = `<ellipse cx="150" cy="130" rx="65" ry="80" fill="${avatarState.skin}"/><rect x="85" y="210" width="130" height="170" rx="30" fill="#1e88e5"/><text x="150" y="280" text-anchor="middle" fill="white" font-size="24">CEO</text>`;
+}
+function randomizeAvatar(){ 
+  avatarState.skin = ['#f4c2a1','#e0ac7e','#c68642'][Math.floor(Math.random()*3)]; 
+  updateFounderAvatar(); 
+}
+function saveAvatar(){ alert("Avatar saved!"); }
 
-// Start
-document.addEventListener('DOMContentLoaded', () => showTab('home'));
+let businessCash = 2450;
+function makeBusinessDecision(n){
+  const gains = [620,920,1380];
+  businessCash += gains[n-1];
+  document.getElementById('cash-balance').textContent = '$' + businessCash;
+  alert("Smart decision! +30 XP");
+}
+function showYear1Report(){
+  alert("🎉 Year 1 Report: Profit made! +280 XP");
+}
+
+// Other tabs (expand these as needed)
+function renderPathways(el){ 
+  el.innerHTML = '<div class="h1">Career Sparks</div><p>Interest quiz + cluster pathways coming soon...</p>'; 
+}
+function renderMoney(el){ 
+  el.innerHTML = '<div class="h1">Life & Money Skills</div><p>Budget challenge + 5 modules coming soon...</p>'; 
+}
+
+// Start the app
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('home');
+});
+
 window.showTab = showTab;
 </script>
 </body>
