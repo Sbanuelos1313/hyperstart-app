@@ -23,48 +23,34 @@ body::before {
               radial-gradient(ellipse 50% 40% at 50% 0%, rgba(245,200,66,0.05), transparent 55%);
 }
 .bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.bg-symbol {
-  position: absolute;
-  font-size: clamp(16px, 3vw, 28px);
-  opacity: 0.04;
-  color: #f0f4ff;
-  animation: bgFloat linear infinite;
-  white-space: nowrap;
-  user-select: none;
-}
-.bg-word {
-  position: absolute;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800;
-  font-size: clamp(11px, 2vw, 16px);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  opacity: 0.035;
-  animation: bgDrift linear infinite;
-  white-space: nowrap;
-  user-select: none;
-}
+.bg-symbol, .bg-word { position: absolute; animation: bgFloat linear infinite; white-space: nowrap; user-select: none; }
+.bg-symbol { font-size: clamp(16px, 3vw, 28px); opacity: 0.04; color: #f0f4ff; }
+.bg-word { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(11px, 2vw, 16px); letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.035; }
 .bg-word.teal { color: #2dd4bf; opacity: 0.045; }
 .bg-word.gold { color: #f5c842; opacity: 0.04; }
 .bg-word.violet { color: #a78bfa; opacity: 0.04; }
-@keyframes bgFloat {
-  0%   { transform: translateY(100vh) rotate(var(--rot, 0deg)); opacity: 0; }
-  5%   { opacity: 0.04; }
-  95%  { opacity: 0.04; }
-  100% { transform: translateY(-20vh) rotate(var(--rot, 0deg)); opacity: 0; }
-}
-@keyframes bgDrift {
-  0%   { transform: translateX(-20vw) translateY(var(--dy, 0px)); opacity: 0; }
-  5%   { opacity: 0.035; }
-  95%  { opacity: 0.035; }
-  100% { transform: translateX(110vw) translateY(var(--dy, 0px)); opacity: 0; }
-}
+@keyframes bgFloat { 0% { transform: translateY(100vh) rotate(var(--rot,0deg)); opacity:0; } 5% { opacity:0.04; } 95% { opacity:0.04; } 100% { transform: translateY(-20vh) rotate(var(--rot,0deg)); opacity:0; } }
 
 /* UI */
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
 .btn{display:block;width:100%;padding:14px;border-radius:8px;background:var(--gold);color:#0a0e1a;font-weight:600;text-align:center;margin-top:12px;cursor:pointer}
 .h1{font-size:28px;font-weight:800;margin-bottom:8px}
 .h2{font-size:20px;font-weight:700}
+
+/* Fix bottom nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 0;
+  background: rgba(10,14,26,0.95);
+  border-top: 1px solid #222;
+  display: flex;
+  font-size: 12px;
+  z-index: 10;
+}
+.bottom-nav > div { flex: 1; text-align: center; cursor: pointer; padding: 8px 4px; }
 </style>
 </head>
 <body>
@@ -87,7 +73,7 @@ body::before {
   <div class="bg-word violet" style="top:78%;--dy:-25px;animation-duration:108s;animation-delay:-22s">INNOVATOR</div>
 </div>
 
-<div class="screen active" id="s-app">
+<div class="screen active" id="s-app" style="height:100vh;display:flex;flex-direction:column;position:relative;z-index:1">
   <div style="padding:16px;background:rgba(10,14,26,0.95);border-bottom:1px solid #222;position:relative;z-index:2">
     <div class="h1" style="display:flex;align-items:center;gap:10px">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="42" height="42">
@@ -104,26 +90,33 @@ body::before {
     <div id="app-inner"></div>
   </div>
 
-  <div style="padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex;font-size:12px;position:relative;z-index:2">
-    <div onclick="showTab('home')" style="flex:1;text-align:center;cursor:pointer">🏠 Home</div>
-    <div onclick="showTab('pathways')" style="flex:1;text-align:center;cursor:pointer">⚡ Pathways</div>
-    <div onclick="showTab('money')" style="flex:1;text-align:center;cursor:pointer">💰 Money</div>
-    <div onclick="showTab('engineering')" style="flex:1;text-align:center;cursor:pointer;color:var(--gold)">🏗️ Build</div>
+  <!-- Fixed Bottom Nav -->
+  <div class="bottom-nav">
+    <div onclick="showTab('home')">🏠 Home</div>
+    <div onclick="showTab('pathways')">⚡ Pathways</div>
+    <div onclick="showTab('money')">💰 Money</div>
+    <div onclick="showTab('think')">🧠 Think</div>
+    <div onclick="showTab('engineering')">🏗️ Build</div>
   </div>
 </div>
 
 <script>
-console.log("✅ HyperStart - Background + Logo Version");
+console.log("✅ HyperStart - Fixed Full Version");
 
-// Constants & Variables
+// Data
 const PERSONAS = [{id:'zara',name:'Zara Williams',grade:7,school:'F.D. Moon Middle School',emoji:'🌟',color:'#f5c842',xp:120,cluster:'Engineering & Design'}];
+
 let student = PERSONAS[0];
+let answers = {};
 
 // Navigation
 function showTab(tab){
   const inner = document.getElementById('app-inner');
   inner.innerHTML = '';
   if(tab === 'home') renderHome(inner);
+  else if(tab === 'pathways') renderPathways(inner);
+  else if(tab === 'money') renderMoney(inner);
+  else if(tab === 'think') renderThink(inner);
   else if(tab === 'engineering') renderEngineering(inner);
 }
 
@@ -141,7 +134,7 @@ function renderHome(el){
   `;
 }
 
-// Business Builder
+// Business Builder (working)
 function renderEngineering(el){
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
@@ -155,7 +148,7 @@ function renderEngineering(el){
       </div>
     </div>
     <div class="card">
-      <h3 id="biz-name">Northside Ventures</h3>
+      <h3>Northside Ventures</h3>
       <p>Cash: <span id="cash-balance" style="font-weight:700">$2,450</span></p>
       <button onclick="makeBusinessDecision(1)" style="margin:8px 0">Lower Prices</button>
       <button onclick="makeBusinessDecision(2)" style="margin:8px 0">Invest in Marketing</button>
@@ -166,6 +159,7 @@ function renderEngineering(el){
   updateFounderAvatar();
 }
 
+// Avatar logic
 let avatarState = {skin: '#f4c2a1'};
 function updateFounderAvatar() {
   const svg = document.getElementById('founder-avatar');
@@ -186,6 +180,20 @@ function makeBusinessDecision(n){
 }
 function showYear1Report(){
   alert("🎉 Year 1 Report: Profit made! +280 XP");
+}
+
+// Improved other tabs
+function renderPathways(el){ 
+  el.innerHTML = `<div class="h1">Career Sparks</div>
+    <div class="card"><p>Tap interests to discover your best STEM cluster match.</p><button class="btn">Start Interest Quiz</button></div>`;
+}
+function renderMoney(el){ 
+  el.innerHTML = `<div class="h1">Life & Money Skills</div>
+    <div class="card"><p>Module 1: Understanding Income & Budgeting</p><button class="btn">Start Budget Challenge</button></div>`;
+}
+function renderThink(el){ 
+  el.innerHTML = `<div class="h1">Big Questions</div>
+    <div class="card"><p>"What does it mean to live a good life in a world of technology?"</p><textarea style="width:100%;height:120px" placeholder="Write your reflection..."></textarea><button class="btn">Save Reflection (+20 XP)</button></div>`;
 }
 
 // Start
