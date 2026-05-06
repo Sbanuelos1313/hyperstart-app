@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f172a;--surf:#1e2937;--surf2:#334155;--border:rgba(255,255,255,0.12);--gold:#facc15;--teal:#22d3ee;--accent:#f472b6;--muted:#94a3b8;--r:20px}
+:root{--bg:#0f172a;--surf:#1e2937;--surf2:#334155;--border:rgba(255,255,255,0.1);--gold:#facc15;--teal:#22d3ee;--accent:#f472b6;--muted:#94a3b8;--r:20px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#f1f5f9;height:100vh;overflow:hidden;position:relative}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(34,211,238,0.3),transparent 60%),radial-gradient(circle at 70% 80%,rgba(250,204,21,0.25),transparent 60%);}
@@ -18,8 +18,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:14px 0;background:rgba(15,23,42,0.97);border-top:1px solid #334155;display:flex;font-size:13px;z-index:10}
 .bottom-nav > div{flex:1;text-align:center;cursor:pointer;padding:8px 4px}
 .xp-header{color:var(--gold);font-weight:700;font-size:16px}
-.avatar-container{text-align:center;margin:20px 0}
-.avatar-inner{width:140px;height:140px;border-radius:50%;background:var(--teal);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:70px;box-shadow:0 0 35px rgba(34,211,238,0.6);border:6px solid rgba(255,255,255,0.2);}
+.avatar{display:flex;justify-content:center;margin:20px 0}
+.avatar-inner{width:140px;height:140px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:70px;box-shadow:0 0 35px rgba(34,211,238,0.6);border:6px solid rgba(255,255,255,0.2);}
 </style>
 </head>
 <body>
@@ -44,7 +44,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <script>
-console.log("✅ HyperStart - Strong Avatar Dashboard Style");
+console.log("✅ HyperStart - Avatar Dashboard V2");
 
 // State
 let student = {name: "Zara Williams", xp: 245};
@@ -70,7 +70,7 @@ function renderHome(el) {
   const name = student.name.split(' ')[0];
   el.innerHTML = `
     <div class="h1">Hey, ${name} 👋</div>
-    <p style="color:var(--muted)">Ready to build something awesome?</p>
+    <p style="color:var(--muted)">Let's build something awesome today!</p>
     
     <div class="card" style="text-align:center">
       <div style="font-size:64px">📋</div>
@@ -117,7 +117,7 @@ function renderMoney(el) {
   `;
 }
 window.startBudgetChallenge = function() {
-  alert("Smart budgeting! +60 XP");
+  alert("Smart choices! +60 XP");
   student.xp += 60;
   updateXP();
 };
@@ -139,17 +139,15 @@ window.saveReflection = function() {
   updateXP();
 };
 
-// BUILD - Strong Avatar Style
+// BUILD - Avatar Dashboard Style
 function renderEngineering(el) {
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
     <div class="card">
       <h3>Founder Avatar</h3>
-      <div class="avatar-container">
-        <div class="avatar-inner" id="avatar-inner">🧑‍💼</div>
-      </div>
+      <div class="avatar"><div class="avatar-inner">🧑‍💼</div></div>
       <div style="display:flex;gap:12px">
-        <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf2);color:white">Randomize Avatar</button>
+        <button onclick="randomizeAvatar()" class="btn" style="background:var(--surf2);color:white">Randomize</button>
         <button onclick="saveAvatar()" class="btn">Save Avatar</button>
       </div>
     </div>
@@ -167,8 +165,8 @@ function renderEngineering(el) {
   `;
 }
 function randomizeAvatar() {
-  const avatars = ['🧑‍💼','👩‍🔬','🧑‍🚀','👨‍💻','🧑‍🌾','👩‍🚀'];
-  document.getElementById('avatar-inner').textContent = avatars[Math.floor(Math.random()*avatars.length)];
+  const avatars = ['🧑‍💼','👩‍🔬','🧑‍🚀','👨‍💻','🧑‍🌾'];
+  document.querySelector('.avatar-inner').textContent = avatars[Math.floor(Math.random()*avatars.length)];
 }
 function saveAvatar(){ alert("Avatar saved!"); }
 let businessCash = 2450;
