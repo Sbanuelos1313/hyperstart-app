@@ -25,6 +25,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .h2{font-size:20px;font-weight:700}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:12px 0;background:rgba(10,14,26,0.95);border-top:1px solid #222;display:flex;font-size:12px;z-index:10}
 .bottom-nav > div{flex:1;text-align:center;cursor:pointer;padding:8px 4px}
+.xp-header{color:var(--gold);font-weight:700;font-size:15px;}
 </style>
 </head>
 <body>
@@ -43,7 +44,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <div class="screen active" id="s-app" style="height:100vh;display:flex;flex-direction:column;position:relative;z-index:1">
-  <div style="padding:16px;background:rgba(10,14,26,0.95);border-bottom:1px solid #222;z-index:2">
+  <div style="padding:16px;background:rgba(10,14,26,0.95);border-bottom:1px solid #222;z-index:2;display:flex;justify-content:space-between;align-items:center">
     <div class="h1" style="display:flex;align-items:center;gap:10px">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="42" height="42">
         <rect width="100" height="100" rx="22" fill="#0a0e1a"/>
@@ -53,6 +54,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
       </svg>
       HyperStart
     </div>
+    <div class="xp-header" id="xp-display">245 XP</div>
   </div>
 
   <div id="app-content" style="flex:1;overflow-y:auto;padding:20px;position:relative;z-index:2">
@@ -69,9 +71,9 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 </div>
 
 <script>
-console.log("✅ HyperStart - Full Multi-Feature Version");
+console.log("✅ HyperStart - Full Upgraded Version");
 
-// Student
+// Student State
 let student = {name: "Zara Williams", xp: 245, grade: 7};
 
 // Navigation
@@ -83,6 +85,11 @@ function showTab(tab) {
   else if (tab === 'money') renderMoney(inner);
   else if (tab === 'think') renderThink(inner);
   else if (tab === 'engineering') renderEngineering(inner);
+  updateXP();
+}
+
+function updateXP() {
+  document.getElementById('xp-display').textContent = student.xp + " XP";
 }
 
 // HOME
@@ -95,7 +102,6 @@ function renderHome(el) {
     <div class="card" style="text-align:center;padding:30px">
       <div style="font-size:60px">📋</div>
       <h2>Pre-Assessment</h2>
-      <p style="color:var(--muted)">Rate yourself so we can track your growth</p>
       <button onclick="startPreAssessment()" class="btn" style="background:var(--teal)">Take Pre-Assessment →</button>
     </div>
 
@@ -106,45 +112,51 @@ function renderHome(el) {
     </div>
   `;
 }
-window.startPreAssessment = function() {
-  window.location.href = '/static/pre-assessment.html';
-};
+window.startPreAssessment = () => window.location.href = '/static/pre-assessment.html';
 
-// PATHWAYS - Interactive
+// PATHWAYS - Full Quiz
 function renderPathways(el) {
   el.innerHTML = `
     <div class="h1">Career Sparks</div>
-    <p style="color:var(--muted)">What sparks your interest?</p>
+    <p style="color:var(--muted)">Choose what excites you most</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
-      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer;text-align:center">💻 Technology</div>
-      <div onclick="pickInterest('health')" class="card" style="cursor:pointer;text-align:center">🩺 Health Sciences</div>
-      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer;text-align:center">🛠️ Engineering</div>
-      <div onclick="pickInterest('data')" class="card" style="cursor:pointer;text-align:center">📊 Data & Analytics</div>
-      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer;text-align:center">🌱 Energy & Environment</div>
-      <div onclick="pickInterest('creative')" class="card" style="cursor:pointer;text-align:center">🎨 Creative Technology</div>
+      <div onclick="pickInterest('tech')" class="card" style="cursor:pointer">💻 Technology & Coding</div>
+      <div onclick="pickInterest('health')" class="card" style="cursor:pointer">🩺 Health Sciences</div>
+      <div onclick="pickInterest('eng')" class="card" style="cursor:pointer">🛠️ Engineering & Design</div>
+      <div onclick="pickInterest('data')" class="card" style="cursor:pointer">📊 Data & Analytics</div>
+      <div onclick="pickInterest('energy')" class="card" style="cursor:pointer">🌱 Energy & Environment</div>
+      <div onclick="pickInterest('creative')" class="card" style="cursor:pointer">🎨 Creative Technology</div>
     </div>
   `;
 }
 window.pickInterest = function(key) {
-  const names = {tech:"Tech & Innovation", health:"Health Sciences", eng:"Engineering & Design", data:"Data & Analytics", energy:"Energy & Environment", creative:"Creative Technology"};
-  alert(`Excellent! Strong match for **${names[key]}**. +50 XP`);
+  const clusterNames = {tech:"Tech & Innovation", health:"Health Sciences", eng:"Engineering & Design", data:"Data & Analytics", energy:"Energy & Environment", creative:"Creative Technology"};
+  alert(`Strong match for **${clusterNames[key]}**! +50 XP`);
   student.xp += 50;
+  updateXP();
 };
 
-// MONEY
+// MONEY - Interactive
 function renderMoney(el) {
   el.innerHTML = `
     <div class="h1">Life & Money Skills</div>
     <div class="card">
-      <h3>Monthly Budget Challenge</h3>
-      <p>You have <strong>$896</strong> this month.</p>
-      <button onclick="startBudgetChallenge()" class="btn">Start Interactive Budget Challenge</button>
+      <h3>Budget Challenge</h3>
+      <p>You earn $896 this month. Make smart choices.</p>
+      <button onclick="startBudgetChallenge()" class="btn">Start Budget Challenge</button>
     </div>
   `;
 }
 window.startBudgetChallenge = function() {
-  alert("Budget Challenge Complete!\n\nYou made smart choices and stayed under budget. +60 XP");
-  student.xp += 60;
+  const result = confirm("Did you stay under budget and make good choices?");
+  if (result) {
+    alert("Excellent budgeting! +60 XP");
+    student.xp += 60;
+  } else {
+    alert("Good effort. Try again next month. +20 XP");
+    student.xp += 20;
+  }
+  updateXP();
 };
 
 // THINK
@@ -152,19 +164,20 @@ function renderThink(el) {
   el.innerHTML = `
     <div class="h1">Big Questions</div>
     <div class="card">
-      <h3>Philosophy & Ethics</h3>
-      <p>"How do we use powerful technology responsibly?"</p>
-      <textarea style="width:100%;height:140px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Your reflection..."></textarea>
-      <button onclick="saveReflection()" class="btn">Save Reflection (+25 XP)</button>
+      <h3>Question 1</h3>
+      <p>"How should we use powerful AI responsibly?"</p>
+      <textarea style="width:100%;height:120px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Your thoughts..."></textarea>
+      <button onclick="saveReflection()" class="btn">Save (+25 XP)</button>
     </div>
   `;
 }
 window.saveReflection = function() {
   alert("Reflection saved! +25 XP");
   student.xp += 25;
+  updateXP();
 };
 
-// BUILD
+// BUILD - Enhanced Avatar
 function renderEngineering(el) {
   el.innerHTML = `
     <div class="h1">My STEM Business Builder</div>
@@ -191,7 +204,7 @@ function renderEngineering(el) {
   updateFounderAvatar();
 }
 
-// Avatar & Business
+// Avatar + Business Logic
 let avatarState = {skin: '#f4c2a1'};
 function updateFounderAvatar() {
   const svg = document.getElementById('founder-avatar');
@@ -205,17 +218,22 @@ function makeBusinessDecision(n){
   businessCash += gains[n-1];
   document.getElementById('cash-balance').textContent = '$' + businessCash;
   alert("Smart decision! +30 XP");
+  student.xp += 30;
+  updateXP();
 }
 function showYear1Report(){
   alert("🎉 Year 1 Report: Great job! +280 XP");
   student.xp += 280;
+  updateXP();
 }
 function finishProgram(){
   window.location.href = '/static/post-assessment.html';
 }
 
 // Start
-document.addEventListener('DOMContentLoaded', () => showTab('home'));
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('home');
+});
 window.showTab = showTab;
 </script>
 </body>
